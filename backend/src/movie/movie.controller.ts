@@ -1,13 +1,26 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { MoviesService } from './movie.service';
+import { MovieService } from './movie.service';
 import { MovieDto } from './movie.dto';
 
 @Controller('movies')
-export class MoviesController {
-  constructor(private readonly moviesService: MoviesService) {}
+export class MovieController {
+  constructor(private readonly movieService: MovieService) {}
 
   @Get('search')
-  async search(@Query('q') query: string): Promise<MovieDto[]> {
-    return this.moviesService.searchMovies(query);
+  async search(
+    @Query('q') query: string,
+  ): Promise<{ movies?: MovieDto[]; error?: string }> {
+    try {
+      const movies = await this.movieService.searchMovies(query);
+      if (movies.length === 0) {
+        return { error: 'No movies found' };
+      }
+      return { movies };
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return { error: err.message };
+      }
+      throw new Error('Error searching for movies');
+    }
   }
 }

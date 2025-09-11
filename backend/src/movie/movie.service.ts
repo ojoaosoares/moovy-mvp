@@ -4,10 +4,10 @@ import { MovieDto, OmdbMovieResponse, OmdbSearchResponse } from './movie.dto';
 import { firstValueFrom } from 'rxjs';
 import * as dotenv from 'dotenv';
 
-dotenv.config(); 
+dotenv.config();
 
 @Injectable()
-export class MoviesService {
+export class MovieService {
   private readonly apiKey = process.env.IMDB_API_KEY;
 
   constructor(private readonly http: HttpService) {}
@@ -20,14 +20,20 @@ export class MoviesService {
     );
 
     if (response.data.Response === 'False' || !response.data.Search) {
-      throw new Error('No movies found');
+      return [];
     }
 
     return Promise.all(
-      response.data.Search.filter((item) => item.Type === 'movie').map((item) =>
-        this.getMovie(item.imdbID),
+      response.data.Search.filter((item) => item.Type === 'movie').map(
+        async (item) => {
+          try {
+            return await this.getMovie(item.imdbID);
+          } catch {
+            return null;
+          }
+        },
       ),
-    );
+    ).then((movies) => movies.filter((m): m is MovieDto => m !== null));
   }
 
   async getMovie(imdbId: string): Promise<MovieDto> {
