@@ -1,32 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MovieDto } from '../types';
 import { Search } from 'lucide-react';
 
 const MovieSearch: React.FC = () => {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState<MovieDto[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [displayedMovies, setDisplayedMovies] = useState<MovieDto[]>([]);
 
   const handleSearch = async () => {
     if (!query) return;
 
     setMovies([]);
+    setDisplayedMovies([]);
 
-    setLoading(true);
     try {
       const response = await fetch(
         `http://localhost:4000/movies/search?q=${query}`
       );
       const data = await response.json();
-      console.log(data.movies);
       setMovies(data.movies || []);
     } catch (err) {
       console.error(err);
       setMovies([]);
-    } finally {
-      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedMovies([]);
+
+    const interval = setInterval(() => {
+      if (index < movies.length) {
+        const movie = movies[index];
+        if (movie) setDisplayedMovies((prev) => [...prev, movie]);
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [movies]);
 
   return (
     <div
@@ -54,6 +68,15 @@ const MovieSearch: React.FC = () => {
           }}
         >
           <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
+            placeholder="Search for a movie"
             style={{
               width: '100%',
               borderRadius: '15px',
@@ -61,12 +84,7 @@ const MovieSearch: React.FC = () => {
               padding: '0.5rem 2.5rem 0.5rem 0.8rem',
               boxSizing: 'border-box',
             }}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for a movie"
           />
-
           <span
             onClick={handleSearch}
             style={{
@@ -86,8 +104,6 @@ const MovieSearch: React.FC = () => {
         </div>
       </div>
 
-      {loading && <p>Loading...</p>}
-
       <div
         style={{
           display: 'flex',
@@ -97,7 +113,7 @@ const MovieSearch: React.FC = () => {
           width: '100%',
         }}
       >
-        {movies.map((movie) => (
+        {displayedMovies.map((movie) => (
           <div
             key={movie.imdbID}
             style={{
@@ -113,6 +129,8 @@ const MovieSearch: React.FC = () => {
               backgroundColor: '#f9f9f9',
               borderRadius: '8px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              transition: 'opacity 0.1s ease',
+              opacity: 1,
             }}
           >
             <div
@@ -130,7 +148,11 @@ const MovieSearch: React.FC = () => {
               <img
                 src={movie.Poster || ''}
                 alt={movie.Title}
-                style={{ width: '150px', height: '225px', objectFit: 'cover' }}
+                style={{
+                  width: '150px',
+                  height: '225px',
+                  objectFit: 'cover',
+                }}
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
