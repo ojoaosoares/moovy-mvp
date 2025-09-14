@@ -8,7 +8,7 @@ export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get('/')
-  async getFavorites(): Promise<{ favorites: Favorite[] }> {
+  async getFavorites(): Promise<{ favorites: Partial<Favorite>[] }> {
     try {
       const favorites = await this.favoriteService.getAllFavorites();
       return { favorites };
