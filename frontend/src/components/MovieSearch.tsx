@@ -6,10 +6,11 @@ import ShowMovies from './ShowMovies';
 const MovieSearch: React.FC = () => {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState<MovieDto[]>([]);
+  const [onSearch, setOnSearch] = useState(true);
 
   const handleSearch = async () => {
     if (!query) return;
-
+    setOnSearch(true);
     setMovies([]);
 
     try {
@@ -22,20 +23,29 @@ const MovieSearch: React.FC = () => {
       console.error(err);
       setMovies([]);
     }
+
+    setOnSearch(false);
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        maxWidth: '1000px',
-        margin: '0 auto',
-      }}
-    >
-      <SearchBar value={query} onChange={setQuery} onSearch={handleSearch} />
-      <ShowMovies movies={movies} />
+    <div style={{ width: '80%', maxWidth: '800px', margin: '0 auto' }}>
+      <h2 style={{ marginLeft: '2.2rem' }}> Search</h2>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <SearchBar value={query} onChange={setQuery} onSearch={handleSearch} />
+
+        {movies.length > 0 && <ShowMovies movies={movies} />}
+        {!onSearch && movies.length === 0 && (
+          <h3>No movies found. Try a different search.</h3>
+        )}
+      </div>
     </div>
   );
 };
