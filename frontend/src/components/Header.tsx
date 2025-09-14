@@ -5,6 +5,10 @@ const Header: React.FC = () => {
   return (
     <header
       style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 999,
+        backgroundColor: '#c6c8cfff',
         fontFamily: 'Inter, sans-serif',
         display: 'flex',
         alignItems: 'center',
