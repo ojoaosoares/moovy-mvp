@@ -1,34 +1,50 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const Header: React.FC = () => {
   return (
     <header
       style={{
+        fontFamily: 'Inter, sans-serif',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-start',
         padding: '1rem 2rem',
       }}
     >
-      <Link to="/" style={{ textDecoration: 'none' }}>
+      <NavLink to="/" style={{ textDecoration: 'none' }}>
         <h1 style={{ margin: 0, color: '#F2911B' }}>Moovey</h1>
-      </Link>
+      </NavLink>
 
       <nav
         style={{
+          fontWeight: '700',
           display: 'flex',
           gap: '1.5rem',
-          marginLeft: '4rem',
+          marginLeft: '6rem',
           marginTop: '1rem',
         }}
       >
-        <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>
+        <NavLink
+          to="/"
+          end
+          style={({ isActive }) => ({
+            color: isActive ? '#F2911B' : '#000000ff',
+            textDecoration: 'none',
+          })}
+        >
           Search
-        </Link>
-        <Link to="/library" style={{ color: '#fff', textDecoration: 'none' }}>
+        </NavLink>
+
+        <NavLink
+          to="/library"
+          style={({ isActive }) => ({
+            color: isActive ? '#F2911B' : '#000000ff',
+            textDecoration: 'none',
+          })}
+        >
           My Library
-        </Link>
+        </NavLink>
       </nav>
     </header>
   );
