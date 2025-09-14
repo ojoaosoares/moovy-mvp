@@ -14,40 +14,34 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
     setIsFavorite(newValue);
 
-    if (newValue) {
-      const res = await fetch(`http://localhost:4000/favorites`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          imdbID: movie.imdbID,
-          Title: movie.Title,
-          Poster: movie.Poster,
-          imdbRating: movie.imdbRating,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to add favorite');
+    try {
+      if (newValue) {
+        const res = await fetch(`http://localhost:4000/favorites`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(movie),
+        });
+        if (!res.ok) throw new Error('Failed to add favorite');
+      } else {
+        const res = await fetch(
+          `http://localhost:4000/favorites/${movie.imdbID}`,
+          { method: 'DELETE' }
+        );
+        if (!res.ok) throw new Error('Failed to remove favorite');
       }
-    } else {
-      const res = await fetch(
-        `http://localhost:4000/favorites/${movie.imdbID}`,
-        {
-          method: 'DELETE',
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error('Failed to remove favorite');
-      }
+    } catch (err) {
+      console.error(err);
     }
+
+    // mostra o toast
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
@@ -94,9 +88,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             borderRadius: '10px',
             color: 'transparent',
           }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
+          onError={(e) =>
+            ((e.target as HTMLImageElement).style.display = 'none')
+          }
         />
         {!movie.Poster && 'No Poster'}
       </div>
@@ -107,16 +101,17 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           marginTop: '0.5rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: "flex-start",
+          alignItems: 'flex-start',
           padding: '0 0.5rem',
           width: '90%',
         }}
       >
         <h3
           style={{
+            fontWeight: '400',
             textAlign: 'left',
             fontFamily: 'Arial, sans-serif',
-            fontSize: '1  rem',
+            fontSize: '1rem',
             margin: 0,
             width: '80%',
           }}
@@ -124,21 +119,24 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           {movie.Title || 'No Title'}
         </h3>
 
-        <span
-          style={{
-            fontWeight: 400,
-            color: '#444',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-          }}
-        >
-          <span style={{ color: '#FFD700' }}>★</span>
-          {movie.imdbRating || '-'}
-        </span>
+        <div style={{ display: 'inline-flex', alignItems: 'flex-start' }}>
+          <span
+            style={{
+              color: '#FFD700',
+              fontSize: '1.5rem',
+              lineHeight: 1,
+              marginTop: '-0.3rem',
+            }}
+          >
+            ★
+          </span>
+          <span style={{ marginLeft: '0.2rem', color: '#444', lineHeight: 1 }}>
+            {movie.imdbRating || '-'}
+          </span>
+        </div>
       </div>
 
-      <div style={{ marginTop: '0.5rem', width: '90%' }}>
+      <div style={{ marginTop: '0.5rem', width: '90%', position: 'relative' }}>
         <button
           onClick={handleToggleFavorite}
           style={{
@@ -146,14 +144,41 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             padding: '0.5rem 1rem',
             border: 'none',
             borderRadius: '15px',
-            backgroundColor: isFavorite ? 'gold' : '#0ACF83',
-            color: isFavorite ? '#000' : '#00000080',
+            backgroundColor: isFavorite ? '#FE6D8E' : '#0ACF83',
+            color: '#00000080',
             fontSize: '1rem',
             cursor: 'pointer',
           }}
         >
-          {isFavorite ? '★ Favorito' : '☆ Add to My Library'}
+          {isFavorite ? '★ Remove' : '☆ Add to My Library'}
         </button>
+
+        {showToast && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '-3rem', // um pouco mais acima
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)', // degrade suave
+              color: '#fff',
+              padding: '0.5rem 1rem',
+              borderRadius: '1rem',
+              fontSize: '0.85rem',
+              fontWeight: '500',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              pointerEvents: 'none',
+              opacity: 0.95,
+              transition: 'transform 0.2s ease, opacity 0.3s ease',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+            }}
+          >
+            {isFavorite
+              ? 'Added to your library!'
+              : 'Removed from your library!'}
+          </div>
+        )}
       </div>
     </div>
   );
