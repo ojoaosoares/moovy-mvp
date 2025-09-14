@@ -18,7 +18,20 @@ const MovieSearch: React.FC = () => {
         `http://localhost:4000/movies/search?q=${query}`
       );
       const data = await response.json();
-      setMovies(data.movies || []);
+      const moviesWithFavorite = await Promise.all(
+  (data.movies || []).map(async (movie: Partial<MovieDto>) => {
+    try {
+      const res = await fetch(
+        `http://localhost:4000/favorites/${movie.imdbID}`
+      );
+      const json = await res.json();
+      return { ...movie, isFavorite: json.isFavorite };
+    } catch {
+      return { ...movie, isFavorite: false };
+    }
+  })
+);
+      setMovies(moviesWithFavorite);
     } catch (err) {
       console.error(err);
       setMovies([]);
