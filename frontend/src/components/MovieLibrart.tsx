@@ -12,16 +12,12 @@ const MovieLibrary: React.FC = () => {
       try {
         const response = await fetch('http://localhost:4000/favorites');
         const data = await response.json();
-
-        console.log(data);
-
         const favoritesWithFlag = (data.favorites || []).map(
           (movie: Partial<MovieDto>) => ({
             ...movie,
             isFavorite: true,
           })
         );
-        console.log(favoritesWithFlag);
         setMovies(favoritesWithFlag);
       } catch (error) {
         console.error('Error fetching favorites:', error);
