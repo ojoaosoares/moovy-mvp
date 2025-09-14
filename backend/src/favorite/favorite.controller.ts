@@ -20,6 +20,21 @@ export class FavoriteController {
     }
   }
 
+  @Get('/:imdbID')
+  async isFavorite(
+    @Query('imdbID') imdbID: string,
+  ): Promise<{ isFavorite: boolean }> {
+    try {
+      const isFavorite = await this.favoriteService.hasFavorite(imdbID);
+      return { isFavorite };
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(err.message);
+      }
+      throw new Error('Error checking favorite status');
+    }
+  }
+
   @Post('/add')
   async addFavorite(
     @Body() favoriteDto: Partial<Favorite>,

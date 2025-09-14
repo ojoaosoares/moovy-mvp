@@ -18,6 +18,10 @@ export class FavoriteService {
     return this.favoriteRepository.createFavorite(favoriteData);
   }
 
+  public async hasFavorite(imdbID: string): Promise<boolean> {
+    return this.favoriteRepository.hasFavorite(imdbID);
+  }
+
   public async getAllFavorites(): Promise<Favorite[]> {
     return this.favoriteRepository.getAllFavorites();
   }
