@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-
-interface Movie {
-  imdbID: string;
-  Title?: string;
-  Poster?: string;
-  imdbRating?: string | number;
-  isFavorite?: boolean;
-}
+import { MovieDto } from '../types';
 
 interface MovieCardProps {
-  movie: Movie;
+  movie: MovieDto;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
