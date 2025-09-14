@@ -13,6 +13,11 @@ export class FavoriteRepository {
     return favorite;
   }
 
+  public async hasFavorite(imdbID: string): Promise<boolean> {
+    const count = await this.db.count({ where: { imdbID } });
+    return count > 0;
+  }
+
   public async getAllFavorites(): Promise<Favorite[]> {
     return this.db.find();
   }

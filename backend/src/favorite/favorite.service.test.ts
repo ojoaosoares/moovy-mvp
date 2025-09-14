@@ -24,7 +24,7 @@ describe('FavoriteService', () => {
   describe('createFavorite', () => {
     it('should throw if required data is missing', async () => {
       await expect(
-        service.createFavorite({ Title: 'The Avengers' } as Partial<Favorite>)
+        service.createFavorite({ Title: 'The Avengers' } as Partial<Favorite>),
       ).rejects.toThrow('All informations are required');
     });
 
@@ -59,11 +59,11 @@ describe('FavoriteService', () => {
 
   describe('deleteFavorite', () => {
     it('should delete a favorite by imdbID and return message', async () => {
-      const message = await service.deleteFavorite("tt0848229");
+      const message = await service.deleteFavorite('tt0848229');
       expect(message).toMatch(/deleted successfully|not found/);
 
       const found = await AppDataSource.getRepository(Favorite).findOneBy({
-        imdbID: "tt0848229",
+        imdbID: 'tt0848229',
       });
       expect(found).toBeNull();
     });

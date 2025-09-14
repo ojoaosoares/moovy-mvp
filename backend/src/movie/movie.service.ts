@@ -23,7 +23,7 @@ export class MovieService {
       return [];
     }
 
-    return Promise.all(
+    const movies = await Promise.all(
       response.data.Search.filter((item) => item.Type === 'movie').map(
         async (item) => {
           try {
@@ -33,7 +33,20 @@ export class MovieService {
           }
         },
       ),
-    ).then((movies) => movies.filter((m): m is MovieDto => m !== null));
+    );
+
+    const filtered = movies.filter((m): m is MovieDto => m !== null);
+
+    const uniqueMovies = Array.from(
+      new Map(filtered.map((m) => [m.imdbID, m])).values(),
+    );
+
+    uniqueMovies.sort((a, b) => {
+      const ratingA = Number(a.imdbRating) || 0; // N/A or empty becomes 0
+      const ratingB = Number(b.imdbRating) || 0;
+      return ratingB - ratingA; // descending order
+    });
+    return uniqueMovies;
   }
 
   async getMovie(imdbId: string): Promise<MovieDto> {

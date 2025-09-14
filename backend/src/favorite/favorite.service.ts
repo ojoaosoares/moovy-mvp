@@ -18,8 +18,19 @@ export class FavoriteService {
     return this.favoriteRepository.createFavorite(favoriteData);
   }
 
-  public async getAllFavorites(): Promise<Favorite[]> {
-    return this.favoriteRepository.getAllFavorites();
+  public async hasFavorite(imdbID: string): Promise<boolean> {
+    return this.favoriteRepository.hasFavorite(imdbID);
+  }
+
+  public async getAllFavorites(): Promise<Partial<Favorite>[]> {
+    const favorites = await this.favoriteRepository.getAllFavorites();
+    favorites.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return favorites.map((favorite) => ({
+      imdbID: favorite.imdbID,
+      Title: favorite.Title,
+      Poster: favorite.Poster,
+      imdbRating: favorite.imdbRating,
+    }));
   }
 
   public async deleteFavorite(imdbID: string): Promise<string> {

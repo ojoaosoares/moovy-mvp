@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Query, Param } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { Favorite } from './favorite.entity';
 import { Body } from '@nestjs/common/decorators/http/route-params.decorator';
@@ -8,7 +8,7 @@ export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get('/')
-  async getFavorites(): Promise<{ favorites: Favorite[] }> {
+  async getFavorites(): Promise<{ favorites: Partial<Favorite>[] }> {
     try {
       const favorites = await this.favoriteService.getAllFavorites();
       return { favorites };
@@ -20,7 +20,22 @@ export class FavoriteController {
     }
   }
 
-  @Post('/add')
+  @Get('/:imdbID')
+  async isFavorite(
+    @Param('imdbID') imdbID: string,
+  ): Promise<{ isFavorite: boolean }> {
+    try {
+      const isFavorite = await this.favoriteService.hasFavorite(imdbID);
+      return { isFavorite };
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(err.message);
+      }
+      throw new Error('Error checking favorite status');
+    }
+  }
+
+  @Post('/')
   async addFavorite(
     @Body() favoriteDto: Partial<Favorite>,
   ): Promise<{ favorite: Favorite }> {
@@ -35,12 +50,12 @@ export class FavoriteController {
     }
   }
 
-  @Delete('/remove')
+  @Delete('/:imdbID')
   async removeFavorite(
-    @Query('id') id: string,
+    @Param('imdbID') imdbID: string,
   ): Promise<{ message: string }> {
     try {
-      const message = await this.favoriteService.deleteFavorite(id);
+      const message = await this.favoriteService.deleteFavorite(imdbID);
       return { message };
     } catch (err: unknown) {
       if (err instanceof Error) {
