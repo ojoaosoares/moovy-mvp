@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Movie {
   imdbID: string;
@@ -13,6 +13,43 @@ interface MovieCardProps {
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
+  const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
+
+  const handleToggleFavorite = async () => {
+    const newValue = !isFavorite;
+    setIsFavorite(newValue);
+
+    if (newValue) {
+      const res = await fetch(`http://localhost:4000/favorites`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imdbID: movie.imdbID,
+          Title: movie.Title,
+          Poster: movie.Poster,
+          imdbRating: movie.imdbRating,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to add favorite');
+      }
+    } else {
+      const res = await fetch(
+        `http://localhost:4000/favorites/${movie.imdbID}`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error('Failed to remove favorite');
+      }
+    }
+  };
+
   return (
     <div
       key={movie.imdbID}
@@ -102,19 +139,20 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
       <div style={{ marginTop: '0.5rem', width: '90%' }}>
         <button
+          onClick={handleToggleFavorite}
           style={{
             width: '100%',
-            padding: "0.5rem 1rem",
-            border: "none",
-            borderRadius: "15px",
-            backgroundColor: movie.isFavorite ? "gold" : "#0ACF83",
-            color: movie.isFavorite ? "#000" : "#00000080",
-            fontSize: "1rem",
-            cursor: "pointer",
+            padding: '0.5rem 1rem',
+            border: 'none',
+            borderRadius: '15px',
+            backgroundColor: isFavorite ? 'gold' : '#0ACF83',
+            color: isFavorite ? '#000' : '#00000080',
+            fontSize: '1rem',
+            cursor: 'pointer',
           }}
         >
-          {movie.isFavorite ? "★ Favorito" : "☆ Add to My Library"}
-      </button>
+          {isFavorite ? '★ Favorito' : '☆ Add to My Library'}
+        </button>
       </div>
     </div>
   );

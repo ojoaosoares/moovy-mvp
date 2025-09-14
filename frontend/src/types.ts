@@ -3,5 +3,5 @@ export interface MovieDto {
   Title: string;
   Poster: string;
   imdbRating: string;
-  isFavorite: boolean
+  isFavorite: boolean;
 }
