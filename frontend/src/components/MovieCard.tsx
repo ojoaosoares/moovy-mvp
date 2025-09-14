@@ -157,10 +157,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           <div
             style={{
               position: 'absolute',
-              top: '-3rem', // um pouco mais acima
+              top: '-3rem',
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)', // degrade suave
+              background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
               color: '#fff',
               padding: '0.5rem 1rem',
               borderRadius: '1rem',
