@@ -24,7 +24,7 @@ const MovieLibrary: React.FC = () => {
         console.log(favoritesWithFlag);
         setMovies(favoritesWithFlag);
       } catch (error) {
-        console.error('Erro ao buscar favoritos:', error);
+        console.error('Error fetching favorites:', error);
       }
       setLoading(false);
     };

@@ -50,9 +50,9 @@ export class FavoriteController {
     }
   }
 
-  @Delete('/:imbdID')
+  @Delete('/:imdbID')
   async removeFavorite(
-    @Param('imbdID') imdbID: string,
+    @Param('imdbID') imdbID: string,
   ): Promise<{ message: string }> {
     try {
       const message = await this.favoriteService.deleteFavorite(imdbID);
