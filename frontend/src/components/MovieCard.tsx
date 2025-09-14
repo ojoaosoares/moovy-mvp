@@ -103,10 +103,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
       <div
         style={{
+          height: '3rem',
           marginTop: '0.5rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: "flex-start",
           padding: '0 0.5rem',
           width: '90%',
         }}
@@ -115,9 +116,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           style={{
             textAlign: 'left',
             fontFamily: 'Arial, sans-serif',
-            fontSize: '1rem',
+            fontSize: '1  rem',
             margin: 0,
-            width: '70%',
+            width: '80%',
           }}
         >
           {movie.Title || 'No Title'}

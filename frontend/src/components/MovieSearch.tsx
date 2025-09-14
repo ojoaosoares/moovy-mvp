@@ -25,7 +25,6 @@ const MovieSearch: React.FC = () => {
               `http://localhost:4000/favorites/${movie.imdbID}`
             );
             const json = await res.json();
-            console.log(json.isFavorite);
             return { ...movie, isFavorite: json.isFavorite };
           } catch {
             return { ...movie, isFavorite: false };
