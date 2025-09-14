@@ -20,6 +20,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     const newValue = !isFavorite;
     setIsFavorite(newValue);
 
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+
     try {
       if (newValue) {
         const res = await fetch(`http://localhost:4000/favorites`, {
@@ -38,10 +41,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     } catch (err) {
       console.error(err);
     }
-
-    // mostra o toast
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
@@ -160,7 +159,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
               top: '-3rem',
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
+              background: 'linear-gradient(135deg, #eb8b8bff 0%, #F2911B 100%)',
               color: '#fff',
               padding: '0.5rem 1rem',
               borderRadius: '1rem',
