@@ -13,41 +13,41 @@ export class MovieService {
   constructor(private readonly http: HttpService) {}
 
   async searchMovies(query: string): Promise<MovieDto[]> {
-  const response = await firstValueFrom(
-    this.http.get<OmdbSearchResponse>(
-      `https://www.omdbapi.com/?apikey=${this.apiKey}&s=${query}`,
-    ),
-  );
+    const response = await firstValueFrom(
+      this.http.get<OmdbSearchResponse>(
+        `https://www.omdbapi.com/?apikey=${this.apiKey}&s=${query}`,
+      ),
+    );
 
-  if (response.data.Response === 'False' || !response.data.Search) {
-    return [];
+    if (response.data.Response === 'False' || !response.data.Search) {
+      return [];
+    }
+
+    const movies = await Promise.all(
+      response.data.Search.filter((item) => item.Type === 'movie').map(
+        async (item) => {
+          try {
+            return await this.getMovie(item.imdbID);
+          } catch {
+            return null;
+          }
+        },
+      ),
+    );
+
+    const filtered = movies.filter((m): m is MovieDto => m !== null);
+
+    const uniqueMovies = Array.from(
+      new Map(filtered.map((m) => [m.imdbID, m])).values(),
+    );
+
+    uniqueMovies.sort((a, b) => {
+      const ratingA = Number(a.imdbRating) || 0; // N/A or empty becomes 0
+      const ratingB = Number(b.imdbRating) || 0;
+      return ratingB - ratingA; // descending order
+    });
+    return uniqueMovies;
   }
-
-  const movies = await Promise.all(
-    response.data.Search.filter((item) => item.Type === 'movie').map(
-      async (item) => {
-        try {
-          return await this.getMovie(item.imdbID);
-        } catch {
-          return null;
-        }
-      },
-    ),
-  );
-
-  const filtered = movies.filter((m): m is MovieDto => m !== null);
-
-  const uniqueMovies = Array.from(
-    new Map(filtered.map((m) => [m.imdbID, m])).values(),
-  );
-
-  uniqueMovies.sort((a, b) => {
-    const ratingA = Number(a.imdbRating) || 0; // N/A or empty becomes 0
-    const ratingB = Number(b.imdbRating) || 0;
-    return ratingB - ratingA; // descending order
-  });
-  return uniqueMovies;
-}
 
   async getMovie(imdbId: string): Promise<MovieDto> {
     const response = await firstValueFrom(
