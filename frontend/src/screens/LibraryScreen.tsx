@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MovieDto } from '../types';
-import ShowMovies from './ShowMovies';
+import ShowMovies from '../components/ShowMovies';
 
-const MovieLibrary: React.FC = () => {
+const LibraryScreen: React.FC = () => {
   const [movies, setMovies] = useState<MovieDto[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,4 +47,4 @@ const MovieLibrary: React.FC = () => {
   );
 };
 
-export default MovieLibrary;
+export default LibraryScreen;

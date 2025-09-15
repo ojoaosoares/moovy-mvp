@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { MovieDto } from '../types';
-import SearchBar from './SearchBar';
-import ShowMovies from './ShowMovies';
+import SearchBar from '../components/SearchBar';
+import ShowMovies from '../components/ShowMovies';
 
-const MovieSearch: React.FC = () => {
+const SearchScreen: React.FC = () => {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState<MovieDto[]>([]);
   const [onSearch, setOnSearch] = useState(true);
@@ -63,4 +63,4 @@ const MovieSearch: React.FC = () => {
   );
 };
 
-export default MovieSearch;
+export default SearchScreen;
