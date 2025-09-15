@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MovieSearch from './components/MovieSearch';
-import MovieLibrary from './components/MovieLibrart';
+import SearchScreen from './screens/SearchScreen';
+import LibraryScreen from './screens/LibraryScreen';
 import Header from './components/Header';
 
 function App() {
@@ -9,8 +9,8 @@ function App() {
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<MovieSearch />} />
-        <Route path="/library" element={<MovieLibrary />} />
+        <Route path="/" element={<SearchScreen />} />
+        <Route path="/library" element={<LibraryScreen />} />
       </Routes>
     </Router>
   );
