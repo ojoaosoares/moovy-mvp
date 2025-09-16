@@ -14,10 +14,11 @@ interface MovieCardProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.7;
+const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
+  const [isRecording, setIsRecording] = useState(false);
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
@@ -40,6 +41,17 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     }
   };
 
+  const handleRecordAudio = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      console.log('Iniciando gravação...');
+      // Aqui você chamaria a função de gravação real
+    } else {
+      console.log('Parando gravação...');
+      // Parar a gravação e salvar o arquivo
+    }
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.imageWrapper}>
@@ -59,14 +71,25 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       </View>
 
       <View style={styles.info}>
-        <Text style={styles.title}>
+        <Text numberOfLines={1} style={styles.title}>
           {movie.Title || 'No Title'}
         </Text>
         <View style={styles.rating}>
           <Text style={styles.star}>★</Text>
           <Text style={styles.ratingValue}>{movie.imdbRating || '-'}</Text>
         </View>
+
+        <View>
+          <TouchableOpacity
+          style={[styles.recordBtn, isRecording && styles.recordingActive]}
+          onPress={handleRecordAudio}
+        >
+          <Text style={styles.recordIcon}>{isRecording ? '■' : '●'}</Text>
+        </TouchableOpacity>
       </View>
+      </View>
+
+      
     </View>
   );
 };
@@ -74,14 +97,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
-    height: '80%',
+    height: '100%',
     backgroundColor: '#fff',
     overflow: 'hidden',
     
   },
   imageWrapper: {
     width: '100%',
-    height: '75%',
+    height: '70%',
     backgroundColor: '#eee',
     borderRadius: 12,
     overflow: 'hidden',
@@ -131,6 +154,24 @@ const styles = StyleSheet.create({
   ratingValue: {
     fontSize: 15,
     color: '#444',
+  },
+   recordBtn: {
+    marginTop: 12,
+    alignSelf: 'center',    // centraliza horizontalmente
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#00ff26ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+  },
+  recordingActive: {
+    backgroundColor: '#FE6D8E',
+  },
+  recordIcon: {
+    fontSize: 16,
+    color: '#fff',
   },
 });
 

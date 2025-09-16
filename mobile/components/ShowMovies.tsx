@@ -8,7 +8,7 @@ interface ShowMoviesProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.7;
+const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 const CARD_MARGIN = 16; 
 const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN;
 
@@ -61,8 +61,8 @@ const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     paddingHorizontal: PADDING_HORIZONTAL,
+    alignItems: 'center',
   },
   cardWrapper: {
     marginHorizontal: CARD_MARGIN / 2,
