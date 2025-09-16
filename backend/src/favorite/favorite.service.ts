@@ -30,6 +30,7 @@ export class FavoriteService {
       Title: favorite.Title,
       Poster: favorite.Poster,
       imdbRating: favorite.imdbRating,
+      audioPath: `http://localhost:5000/${favorite.audioPath}`
     }));
   }
 
@@ -37,5 +38,14 @@ export class FavoriteService {
     const result = await this.favoriteRepository.deleteFavoriteByimdbID(imdbID);
     if (!result) return 'Favorite not found';
     return 'Favorite deleted successfully';
+  }
+
+  public async saveAudio(imdbID: string, audioPath: string): Promise<Favorite> {
+    
+    const favorite = await this.favoriteRepository.saveAudio(imdbID, audioPath);
+    if (!favorite) {
+      throw new Error('Favorite not found');
+    }
+    return favorite;
   }
 }
