@@ -16,6 +16,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [audioUri, setAudioUri] = useState<string | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [needsSync, setNeedsSync] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -27,7 +28,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       });
       console.log('Starting recording..');
       const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
+        Audio.RecordingOptionsPresets.HIGH_QUALITY,
       );
       setRecording(recording);
       console.log('Recording started');
@@ -45,6 +46,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     const uri = recording.getURI();
     console.log('Recording stopped and stored at', uri);
     setAudioUri(uri);
+
+    setNeedsSync(true);
   };
 
   const playAudio = async () => {
@@ -118,6 +121,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         ) : (
           <Text>No Poster</Text>
         )}
+
+        {audioUri ? (
+          <View style={[styles.syncBar, needsSync ? styles.pending : styles.synced]}>
+            <Text style={styles.syncText}>{needsSync ? 'pending' : 'synced'}</Text>
+          </View>
+        ) : null}
+
         <TouchableOpacity style={styles.favoriteBtn} onPress={handleToggleFavorite}>
           <Text style={[styles.favoriteIcon, isFavorite && styles.favoriteActive]}>★</Text>
         </TouchableOpacity>
@@ -260,6 +270,29 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   deleteIcon: { color: '#fff', fontSize: 16 },
+
+  syncBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+  },
+  syncText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  synced: {
+    backgroundColor: '#4caf50', // verde
+  },
+  pending: {
+    backgroundColor: '#fbc02d', // amarelo
+  },
 });
 
 export default MovieCard;
