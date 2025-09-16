@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Audio } from 'expo-av';
 import { MovieDto } from '../types';
@@ -13,34 +13,81 @@ const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
   const [isRecording, setIsRecording] = useState(false);
-  const [recording, setRecording] = useState();
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [audioUri, setAudioUri] = useState<string | null>(null);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-    async function startRecording() {
-      try {
-        console.log('Requesting permissions..');
-        await Audio.requestPermissionsAsync();
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-        });
-        console.log('Starting recording..');
-        const { recording } = await Audio.Recording.createAsync(
-          Audio.RecordingOptionsPresets.HIGH_QUALITY
-        );
-        setRecording(recording);
-        console.log('Recording started');
-      } catch (err) {
-        console.error('Failed to start recording', err);
+  const startRecording = async () => {
+    try {
+      console.log('Requesting permissions..');
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      console.log('Starting recording..');
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  };
+
+  const stopRecording = async () => {
+    if (!recording) return;
+    console.log('Stopping recording..');
+    setRecording(null);
+    setIsRecording(false);
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    console.log('Recording stopped and stored at', uri);
+    setAudioUri(uri);
+  };
+
+  const playAudio = async () => {
+    if (!audioUri) return;
+
+    if (sound) {
+      await sound.unloadAsync();
+      setSound(null);
+    }
+
+    const newSound = new Audio.Sound();
+    try {
+      await newSound.loadAsync({ uri: audioUri });
+      setSound(newSound);
+      await newSound.playAsync();
+    } catch (error) {
+      console.error('Error playing audio', error);
+    }
+
+    newSound.setOnPlaybackStatusUpdate((status) => {
+      if (status.isLoaded && status.didJustFinish) {
+        newSound.unloadAsync();
+        setSound(null);
       }
-    }
+    });
+  };
 
-    async function stopRecording() {
-      console.log('Stopping recording..');
-      setRecording(undefined);
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      console.log('Recording stopped and stored at', uri);
+  const deleteAudio = async () => {
+    if (sound) {
+      await sound.unloadAsync();
+      setSound(null);
     }
+    setAudioUri(null);
+  };
+
+  const handleRecordAudio = () => {
+    if (!isRecording) {
+      setIsRecording(true);
+      startRecording();
+    } else {
+      stopRecording();
+    }
+  };
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
@@ -60,18 +107,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       }
     } catch (err) {
       console.error(err);
-    }
-  };
-
-
-  const handleRecordAudio = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording) {
-      console.log('Iniciando gravação...');
-      startRecording();
-    } else {
-      console.log('Parando gravação...');
-      stopRecording();
     }
   };
 
@@ -98,12 +133,23 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         </View>
 
         <View>
-          <TouchableOpacity
-            style={[styles.recordBtn, isRecording && styles.recordingActive]}
-            onPress={handleRecordAudio}
-          >
-            <Text style={styles.recordIcon}>{isRecording ? '■' : '●'}</Text>
-          </TouchableOpacity>
+          {audioUri ? (
+            <View style={styles.audioButtons}>
+              <TouchableOpacity style={styles.playBtn} onPress={playAudio}>
+                <Text style={styles.playIcon}>▶</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteBtn} onPress={deleteAudio}>
+                <Text style={styles.deleteIcon}>🗑</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={[styles.recordBtn, isRecording && styles.recordingActive]}
+              onPress={handleRecordAudio}
+            >
+              <Text style={styles.recordIcon}>{isRecording ? '■' : '●'}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -116,6 +162,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#fff',
     overflow: 'hidden',
+    borderRadius: 12,
   },
   imageWrapper: {
     width: '100%',
@@ -172,7 +219,7 @@ const styles = StyleSheet.create({
   },
   recordBtn: {
     marginTop: 12,
-    alignSelf: 'center', // centraliza horizontalmente
+    alignSelf: 'center',
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -188,6 +235,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
+  audioButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  playBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#00f',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 8,
+  },
+  playIcon: { color: '#fff', fontSize: 16 },
+  deleteBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f00',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 8,
+  },
+  deleteIcon: { color: '#fff', fontSize: 16 },
 });
 
 export default MovieCard;
