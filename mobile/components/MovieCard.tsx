@@ -25,8 +25,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       const formData = new FormData();
       formData.append('file', {
         uri: audioUri,
-        name: `audio_${movie.imdbID}.m4a`,
-        type: 'audio/m4a',
+        name: `audio_${movie.imdbID}.mp3`,
+        type: 'audio/mp3',
       } as any);
 
       await fetch(`http://10.0.2.2:4000/favorites/audio/${movie.imdbID}`, {

@@ -11,7 +11,6 @@ const LibraryScreen: React.FC = () => {
     const fetchFavorites = async () => {
       setLoading(true);
       try {
-        // ⚠️ Replace localhost with your PC IP (e.g., http://192.168.1.10:4000)
         const response = await fetch('http://10.0.2.2:4000/favorites');
         const data = await response.json();
         const favoritesWithFlag = (data.favorites || []).map((movie: Partial<MovieDto>) => ({
