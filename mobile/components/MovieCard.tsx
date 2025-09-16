@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Audio } from 'expo-av';
 import { MovieDto } from '../types';
@@ -18,20 +18,48 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [needsSync, setNeedsSync] = useState(false);
 
+  const syncAudio = async () => {
+    if (!audioUri || !needsSync) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: audioUri,
+        name: `audio_${movie.imdbID}.m4a`,
+        type: 'audio/m4a',
+      } as any);
+
+      await fetch(`http://10.0.2.2:4000/favorites/audio/${movie.imdbID}`, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+
+      console.log('Áudio sincronizado!');
+      setNeedsSync(false);
+    } catch (err) {
+      console.log('Erro ao sincronizar ou sem conexão. Tentaremos depois...', err);
+    }
+  };
+
+  useEffect(() => {
+    if (audioUri && needsSync) {
+      syncAudio();
+    }
+  }, [audioUri, needsSync]);
+
   const startRecording = async () => {
     try {
-      console.log('Requesting permissions..');
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
       });
-      console.log('Starting recording..');
       const { recording } = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY,
       );
       setRecording(recording);
-      console.log('Recording started');
+      setIsRecording(true);
     } catch (err) {
       console.error('Failed to start recording', err);
     }
@@ -39,34 +67,33 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
   const stopRecording = async () => {
     if (!recording) return;
-    console.log('Stopping recording..');
     setRecording(null);
     setIsRecording(false);
     await recording.stopAndUnloadAsync();
     const uri = recording.getURI();
-    console.log('Recording stopped and stored at', uri);
     setAudioUri(uri);
-
     setNeedsSync(true);
+  };
+
+  const handleRecordAudio = () => {
+    if (!isRecording) startRecording();
+    else stopRecording();
   };
 
   const playAudio = async () => {
     if (!audioUri) return;
-
     if (sound) {
       await sound.unloadAsync();
       setSound(null);
     }
-
     const newSound = new Audio.Sound();
     try {
       await newSound.loadAsync({ uri: audioUri });
       setSound(newSound);
       await newSound.playAsync();
-    } catch (error) {
-      console.error('Error playing audio', error);
+    } catch (err) {
+      console.error(err);
     }
-
     newSound.setOnPlaybackStatusUpdate((status) => {
       if (status.isLoaded && status.didJustFinish) {
         newSound.unloadAsync();
@@ -81,21 +108,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       setSound(null);
     }
     setAudioUri(null);
-  };
-
-  const handleRecordAudio = () => {
-    if (!isRecording) {
-      setIsRecording(true);
-      startRecording();
-    } else {
-      stopRecording();
-    }
+    setNeedsSync(false);
   };
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
     setIsFavorite(newValue);
-
     try {
       if (newValue) {
         await fetch(`http://10.0.2.2:4000/favorites`, {
@@ -122,11 +140,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           <Text>No Poster</Text>
         )}
 
-        {audioUri ? (
+        {audioUri && (
           <View style={[styles.syncBar, needsSync ? styles.pending : styles.synced]}>
             <Text style={styles.syncText}>{needsSync ? 'pending' : 'synced'}</Text>
           </View>
-        ) : null}
+        )}
 
         <TouchableOpacity style={styles.favoriteBtn} onPress={handleToggleFavorite}>
           <Text style={[styles.favoriteIcon, isFavorite && styles.favoriteActive]}>★</Text>
@@ -182,10 +200,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
-  poster: {
-    width: '100%',
-    height: '100%',
-  },
+  poster: { width: '100%', height: '100%' },
   favoriteBtn: {
     position: 'absolute',
     top: 8,
@@ -195,38 +210,13 @@ const styles = StyleSheet.create({
     padding: 4,
     elevation: 4,
   },
-  favoriteIcon: {
-    fontSize: 20,
-    color: '#aaa',
-  },
-  favoriteActive: {
-    color: '#FE6D8E',
-  },
-  info: {
-    paddingHorizontal: 8,
-    paddingVertical: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 6,
-    textAlign: 'center',
-    fontFamily: 'ProximaNova-Regular',
-  },
-  rating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  star: {
-    color: '#FFD700',
-    fontSize: 15,
-    marginRight: 4,
-  },
-  ratingValue: {
-    fontSize: 15,
-    color: '#444',
-  },
+  favoriteIcon: { fontSize: 20, color: '#aaa' },
+  favoriteActive: { color: '#FE6D8E' },
+  info: { paddingHorizontal: 8, paddingVertical: 10 },
+  title: { fontSize: 20, fontWeight: '600', marginBottom: 6, textAlign: 'center' },
+  rating: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  star: { color: '#FFD700', fontSize: 15, marginRight: 4 },
+  ratingValue: { fontSize: 15, color: '#444' },
   recordBtn: {
     marginTop: 12,
     alignSelf: 'center',
@@ -238,18 +228,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 4,
   },
-  recordingActive: {
-    backgroundColor: '#FE6D8E',
-  },
-  recordIcon: {
-    fontSize: 16,
-    color: '#fff',
-  },
-  audioButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 12,
-  },
+  recordingActive: { backgroundColor: '#FE6D8E' },
+  recordIcon: { fontSize: 16, color: '#fff' },
+  audioButtons: { flexDirection: 'row', justifyContent: 'center', marginTop: 12 },
   playBtn: {
     width: 32,
     height: 32,
@@ -270,7 +251,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   deleteIcon: { color: '#fff', fontSize: 16 },
-
   syncBar: {
     position: 'absolute',
     bottom: 0,
@@ -282,17 +262,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
   },
-  syncText: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  synced: {
-    backgroundColor: '#4caf50', // verde
-  },
-  pending: {
-    backgroundColor: '#fbc02d', // amarelo
-  },
+  syncText: { fontSize: 12, color: '#fff', fontWeight: 'bold' },
+  synced: { backgroundColor: '#4caf50' },
+  pending: { backgroundColor: '#fbc02d' },
 });
 
 export default MovieCard;
