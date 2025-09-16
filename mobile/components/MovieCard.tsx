@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Audio } from 'expo-av';
 import { MovieDto } from '../types';
 
 interface MovieCardProps {
@@ -12,6 +13,34 @@ const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
   const [isRecording, setIsRecording] = useState(false);
+  const [recording, setRecording] = useState();
+
+    async function startRecording() {
+      try {
+        console.log('Requesting permissions..');
+        await Audio.requestPermissionsAsync();
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
+        });
+        console.log('Starting recording..');
+        const { recording } = await Audio.Recording.createAsync(
+          Audio.RecordingOptionsPresets.HIGH_QUALITY
+        );
+        setRecording(recording);
+        console.log('Recording started');
+      } catch (err) {
+        console.error('Failed to start recording', err);
+      }
+    }
+
+    async function stopRecording() {
+      console.log('Stopping recording..');
+      setRecording(undefined);
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      console.log('Recording stopped and stored at', uri);
+    }
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
@@ -34,14 +63,15 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     }
   };
 
+
   const handleRecordAudio = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
       console.log('Iniciando gravação...');
-      // Aqui você chamaria a função de gravação real
+      startRecording();
     } else {
       console.log('Parando gravação...');
-      // Parar a gravação e salvar o arquivo
+      stopRecording();
     }
   };
 
@@ -89,7 +119,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: '100%',
-    height: '70%',
+    height: '75%',
     backgroundColor: '#eee',
     borderRadius: 12,
     overflow: 'hidden',
