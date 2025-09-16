@@ -12,14 +12,12 @@ const LibraryScreen: React.FC = () => {
       setLoading(true);
       try {
         // ⚠️ Replace localhost with your PC IP (e.g., http://192.168.1.10:4000)
-        const response = await fetch('http://10.0.2.2:4000/favorites'); 
+        const response = await fetch('http://10.0.2.2:4000/favorites');
         const data = await response.json();
-        const favoritesWithFlag = (data.favorites || []).map(
-          (movie: Partial<MovieDto>) => ({
-            ...movie,
-            isFavorite: true,
-          })
-        );
+        const favoritesWithFlag = (data.favorites || []).map((movie: Partial<MovieDto>) => ({
+          ...movie,
+          isFavorite: true,
+        }));
         setMovies(favoritesWithFlag);
       } catch (error) {
         console.error('Error fetching favorites:', error);
@@ -32,7 +30,6 @@ const LibraryScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-
       <View style={{ paddingTop: 20, paddingLeft: 20 }}>
         <Text style={styles.title}>My Library</Text>
       </View>
@@ -40,7 +37,10 @@ const LibraryScreen: React.FC = () => {
       {loading && <ActivityIndicator size="large" />}
       {!loading && movies.length > 0 && <ShowMovies movies={movies} />}
       {!loading && movies.length === 0 && (
-        <Text style={styles.emptyText}>It looks like there are no movies in your library! Go to your web application and add some!</Text>
+        <Text style={styles.emptyText}>
+          It looks like there are no movies in your library! Go to your web application and add
+          some!
+        </Text>
       )}
     </View>
   );
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#888',  
+    color: '#888',
   },
 });
 

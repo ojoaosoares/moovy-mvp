@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { MovieDto } from '../types';
 
 interface MovieCardProps {
@@ -60,13 +53,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         ) : (
           <Text>No Poster</Text>
         )}
-        <TouchableOpacity
-          style={styles.favoriteBtn}
-          onPress={handleToggleFavorite}
-        >
-          <Text style={[styles.favoriteIcon, isFavorite && styles.favoriteActive]}>
-            ★
-          </Text>
+        <TouchableOpacity style={styles.favoriteBtn} onPress={handleToggleFavorite}>
+          <Text style={[styles.favoriteIcon, isFavorite && styles.favoriteActive]}>★</Text>
         </TouchableOpacity>
       </View>
 
@@ -81,15 +69,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
         <View>
           <TouchableOpacity
-          style={[styles.recordBtn, isRecording && styles.recordingActive]}
-          onPress={handleRecordAudio}
-        >
-          <Text style={styles.recordIcon}>{isRecording ? '■' : '●'}</Text>
-        </TouchableOpacity>
+            style={[styles.recordBtn, isRecording && styles.recordingActive]}
+            onPress={handleRecordAudio}
+          >
+            <Text style={styles.recordIcon}>{isRecording ? '■' : '●'}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      </View>
-
-      
     </View>
   );
 };
@@ -100,7 +86,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#fff',
     overflow: 'hidden',
-    
   },
   imageWrapper: {
     width: '100%',
@@ -155,9 +140,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#444',
   },
-   recordBtn: {
+  recordBtn: {
     marginTop: 12,
-    alignSelf: 'center',    // centraliza horizontalmente
+    alignSelf: 'center', // centraliza horizontalmente
     width: 32,
     height: 32,
     borderRadius: 16,

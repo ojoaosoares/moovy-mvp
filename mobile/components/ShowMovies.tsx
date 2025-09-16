@@ -9,7 +9,7 @@ interface ShowMoviesProps {
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.8;
-const CARD_MARGIN = 16; 
+const CARD_MARGIN = 16;
 const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN;
 
 const PADDING_HORIZONTAL = (SCREEN_WIDTH - CARD_WIDTH) / 2 - CARD_MARGIN / 2;
@@ -41,7 +41,6 @@ const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
-      
       snapToInterval={SNAP_INTERVAL}
       snapToAlignment="start"
       decelerationRate="fast"
@@ -53,7 +52,7 @@ const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
             <View key={movie.imdbID} style={styles.cardWrapper}>
               <MovieCard movie={movie} />
             </View>
-          )
+          ),
       )}
     </ScrollView>
   );
