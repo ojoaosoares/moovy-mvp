@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { MovieDto } from '../types';
 
 interface MovieCardProps {
@@ -8,11 +8,12 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
   const [showToast, setShowToast] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
     setIsFavorite(newValue);
-
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
 
@@ -27,13 +28,25 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       } else {
         const res = await fetch(
           `http://localhost:4000/favorites/${movie.imdbID}`,
-          { method: 'DELETE' }
+          {
+            method: 'DELETE',
+          }
         );
         if (!res.ok) throw new Error('Failed to remove favorite');
       }
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handlePlayAudio = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
   };
 
   return (
@@ -46,8 +59,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         padding: '0.5rem 0',
         boxSizing: 'border-box',
         textAlign: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#f9f9f9',
@@ -57,36 +68,65 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         opacity: 1,
       }}
     >
+      {/* Poster com botão de play */}
       <div
         style={{
           width: '90%',
           height: '350px',
+          margin: '0 auto',
+          position: 'relative',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          background: 'linear-gradient(to bottom, #fff, #2b2121)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#2b2121ff',
-          fontSize: '1rem',
-          background: 'linear-gradient(to bottom, #ffffffff, #2b2121ff)',
-          borderRadius: '10px',
         }}
       >
-        <img
-          src={movie.Poster || ''}
-          alt={movie.Title || 'No Title'}
-          style={{
-            width: '100%',
-            height: '350px',
-            objectFit: 'cover',
-            borderRadius: '10px',
-            color: 'transparent',
-          }}
-          onError={(e) =>
-            ((e.target as HTMLImageElement).style.display = 'none')
-          }
-        />
-        {!movie.Poster && 'No Poster'}
+        {movie.Poster ? (
+          <img
+            src={movie.Poster}
+            alt={movie.Title || 'No Title'}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          <span style={{ color: '#fff' }}>No Poster</span>
+        )}
+
+        {movie.audioPath && (
+          <>
+            <button
+              onClick={handlePlayAudio}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '60px',
+                height: '60px',
+                borderRadius: '30px',
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {isPlaying ? '■' : '▶'}
+            </button>
+            <audio
+              ref={audioRef}
+              src={movie.audioPath}
+              onEnded={() => setIsPlaying(false)}
+            />
+          </>
+        )}
       </div>
 
+      {/* Informações do filme */}
       <div
         style={{
           height: '3rem',
@@ -96,6 +136,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           alignItems: 'flex-start',
           padding: '0 0.5rem',
           width: '90%',
+          marginLeft: 'auto',
+          marginRight: 'auto',
         }}
       >
         <h3
@@ -128,7 +170,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         </div>
       </div>
 
-      <div style={{ marginTop: '0.5rem', width: '90%', position: 'relative' }}>
+      {/* Footer com botão de favorito */}
+      <div
+        style={{
+          marginTop: '0.5rem',
+          width: '90%',
+          position: 'relative',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      >
         <button
           onClick={handleToggleFavorite}
           style={{

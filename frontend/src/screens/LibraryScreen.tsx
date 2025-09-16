@@ -12,6 +12,7 @@ const LibraryScreen: React.FC = () => {
       try {
         const response = await fetch('http://localhost:4000/favorites');
         const data = await response.json();
+        console.log('Fetched favorites:', data.favorites);
         const favoritesWithFlag = (data.favorites || []).map(
           (movie: Partial<MovieDto>) => ({
             ...movie,
