@@ -35,10 +35,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      console.log('Áudio sincronizado!');
+      console.log('Audio synced successfully');
       setNeedsSync(false);
     } catch (err) {
-      console.log('Erro ao sincronizar ou sem conexão. Tentaremos depois...', err);
+      console.log('Error when syncing audio', err);
     }
   };
 
@@ -71,6 +71,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     setIsRecording(false);
     await recording.stopAndUnloadAsync();
     const uri = recording.getURI();
+    console.log(uri)
     setAudioUri(uri);
     setNeedsSync(true);
   };
@@ -86,6 +87,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       await sound.unloadAsync();
       setSound(null);
     }
+     console.log('Playing Sound', audioUri);
     const newSound = new Audio.Sound();
     try {
       await newSound.loadAsync({ uri: audioUri });
