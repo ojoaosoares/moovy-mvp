@@ -26,4 +26,13 @@ export class FavoriteRepository {
     const result = await this.db.delete({ imdbID });
     return result.affected === 0;
   }
+
+  public async saveAudio(imdbID: string, audioPath: string): Promise<Favorite | null> {
+    const favorite = await this.db.findOneBy({ imdbID });
+    if (!favorite) return null;
+
+    favorite.audioPath = audioPath;
+    await this.db.save(favorite);
+    return favorite;
+  }
 }
