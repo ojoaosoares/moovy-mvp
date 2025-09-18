@@ -25,6 +25,8 @@ const LibraryScreen: React.FC = () => {
     };
 
     fetchFavorites();
+
+    const interval = setInterval(fetchFavorites, 30000);
   }, []);
 
   return (

@@ -24,7 +24,3 @@ Esse projeto foi desenvolvido como parte do Fullstack Challenge da Scipio Labs, 
 <img align="center" alt="TypeORM" height="30" width="40" src="https://avatars.githubusercontent.com/u/20165699?s=200&v=4" />
 <img align="center" alt="ReactNative" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/reactnative/reactnative-original.svg">
 </div>
-
-
-  
-
