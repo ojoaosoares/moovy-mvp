@@ -42,7 +42,6 @@ export class FavoriteService {
   }
 
   public async saveAudio(imdbID: string, audioPath: string): Promise<Favorite> {
-    
     const favorite = await this.favoriteRepository.saveAudio(imdbID, audioPath);
     if (!favorite) {
       throw new Error('Favorite not found');
