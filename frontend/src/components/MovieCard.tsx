@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { MovieDto } from '../types';
+import FavoriteButton from './FavoriteButton';
+import AudioControl from './AudioControl';
 
 interface MovieCardProps {
   movie: MovieDto;
@@ -28,9 +30,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       } else {
         const res = await fetch(
           `http://localhost:4000/favorites/${movie.imdbID}`,
-          {
-            method: 'DELETE',
-          }
+          { method: 'DELETE' }
         );
         if (!res.ok) throw new Error('Failed to remove favorite');
       }
@@ -41,11 +41,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
   const handlePlayAudio = () => {
     if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
+    isPlaying ? audioRef.current.pause() : audioRef.current.play();
     setIsPlaying(!isPlaying);
   };
 
@@ -57,15 +53,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         width: 'calc(33% - 1rem)',
         border: '1px solid #ccc',
         padding: '0.5rem 0',
-        boxSizing: 'border-box',
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#f9f9f9',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        transition: 'opacity 0.1s ease',
-        opacity: 1,
       }}
     >
       <div
@@ -98,35 +91,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         )}
 
         {movie.audioPath && (
-          <>
-            <button
-              onClick={handlePlayAudio}
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '60px',
-                height: '60px',
-                borderRadius: '30px',
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                color: '#fff',
-                border: 'none',
-                fontSize: '24px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {isPlaying ? '■' : '▶'}
-            </button>
-            <audio
-              ref={audioRef}
-              src={movie.audioPath}
-              onEnded={() => setIsPlaying(false)}
-            />
-          </>
+          <AudioControl
+            audioPath={movie.audioPath}
+            isPlaying={isPlaying}
+            onTogglePlay={handlePlayAudio}
+            audioRef={audioRef}
+            setIsPlaying={setIsPlaying}
+          />
         )}
       </div>
 
@@ -139,8 +110,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           alignItems: 'flex-start',
           padding: '0 0.5rem',
           width: '90%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          margin: '0.5rem auto 0 auto',
         }}
       >
         <h3
@@ -155,7 +125,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         >
           {movie.Title || 'No Title'}
         </h3>
-
         <div style={{ display: 'inline-flex', alignItems: 'flex-start' }}>
           <span
             style={{
@@ -173,58 +142,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         </div>
       </div>
 
-      <div
-        style={{
-          marginTop: '0.5rem',
-          width: '90%',
-          position: 'relative',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        }}
-      >
-        <button
-          onClick={handleToggleFavorite}
-          style={{
-            width: '100%',
-            padding: '0.5rem 1rem',
-            border: 'none',
-            borderRadius: '15px',
-            backgroundColor: isFavorite ? '#FE6D8E' : '#0ACF83',
-            color: '#00000080',
-            fontSize: '1rem',
-            cursor: 'pointer',
-          }}
-        >
-          {isFavorite ? '★ Remove' : '☆ Add to My Library'}
-        </button>
-
-        {showToast && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '-3rem',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'linear-gradient(135deg, #eb8b8bff 0%, #F2911B 100%)',
-              color: '#fff',
-              padding: '0.5rem 1rem',
-              borderRadius: '1rem',
-              fontSize: '0.85rem',
-              fontWeight: '500',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              pointerEvents: 'none',
-              opacity: 0.95,
-              transition: 'transform 0.2s ease, opacity 0.3s ease',
-              whiteSpace: 'nowrap',
-              textAlign: 'center',
-            }}
-          >
-            {isFavorite
-              ? 'Added to your library!'
-              : 'Removed from your library!'}
-          </div>
-        )}
-      </div>
+      <FavoriteButton
+        isFavorite={isFavorite}
+        onToggle={handleToggleFavorite}
+        showToast={showToast}
+      />
     </div>
   );
 };
