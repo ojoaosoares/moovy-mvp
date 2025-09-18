@@ -68,7 +68,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         opacity: 1,
       }}
     >
-      {/* Poster com botão de play */}
       <div
         style={{
           width: '90%',
@@ -87,7 +86,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           <img
             src={movie.Poster}
             alt={movie.Title || 'No Title'}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              color: 'transparent',
+            }}
           />
         ) : (
           <span style={{ color: '#fff' }}>No Poster</span>
@@ -126,7 +130,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         )}
       </div>
 
-      {/* Informações do filme */}
       <div
         style={{
           height: '3rem',
@@ -170,7 +173,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         </div>
       </div>
 
-      {/* Footer com botão de favorito */}
       <div
         style={{
           marginTop: '0.5rem',
