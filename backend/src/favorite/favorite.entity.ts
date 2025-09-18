@@ -24,4 +24,7 @@ export class Favorite {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column('text', { nullable: true })
+  audioPath?: string;
 }

@@ -23,19 +23,29 @@ export class FavoriteService {
   }
 
   public async getAllFavorites(): Promise<Partial<Favorite>[]> {
-    const favorites = await this.favoriteRepository.getAllFavorites();
-    favorites.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    return favorites.map((favorite) => ({
-      imdbID: favorite.imdbID,
-      Title: favorite.Title,
-      Poster: favorite.Poster,
-      imdbRating: favorite.imdbRating,
-    }));
-  }
+  const favorites = await this.favoriteRepository.getAllFavorites();
+  favorites.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  return favorites.map((favorite) => ({
+    imdbID: favorite.imdbID,
+    Title: favorite.Title,
+    Poster: favorite.Poster,
+    imdbRating: favorite.imdbRating,
+    audioPath: favorite.audioPath ? `http://localhost:5000/${favorite.audioPath}` : undefined
+  }));
+}
 
   public async deleteFavorite(imdbID: string): Promise<string> {
     const result = await this.favoriteRepository.deleteFavoriteByimdbID(imdbID);
     if (!result) return 'Favorite not found';
     return 'Favorite deleted successfully';
+  }
+
+  public async saveAudio(imdbID: string, audioPath: string): Promise<Favorite> {
+    const favorite = await this.favoriteRepository.saveAudio(imdbID, audioPath);
+    if (!favorite) {
+      throw new Error('Favorite not found');
+    }
+    return favorite;
   }
 }

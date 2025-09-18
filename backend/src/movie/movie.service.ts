@@ -42,9 +42,9 @@ export class MovieService {
     );
 
     uniqueMovies.sort((a, b) => {
-      const ratingA = Number(a.imdbRating) || 0; // N/A or empty becomes 0
+      const ratingA = Number(a.imdbRating) || 0;
       const ratingB = Number(b.imdbRating) || 0;
-      return ratingB - ratingA; // descending order
+      return ratingB - ratingA;
     });
     return uniqueMovies;
   }

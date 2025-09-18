@@ -11,7 +11,6 @@ const LibraryScreen: React.FC = () => {
     const fetchFavorites = async () => {
       setLoading(true);
       try {
-        // ⚠️ Replace localhost with your PC IP (e.g., http://192.168.1.10:4000)
         const response = await fetch('http://10.0.2.2:4000/favorites');
         const data = await response.json();
         const favoritesWithFlag = (data.favorites || []).map((movie: Partial<MovieDto>) => ({
@@ -57,10 +56,13 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: 'Arial',
   },
-  emptyText: {
-    fontSize: 18,
-    color: '#888',
-  },
+ emptyText: {
+  fontSize: 18,
+  color: '#666',
+  textAlign: 'center',
+  lineHeight: 24,
+  marginVertical: 20,
+},
 });
 
 export default LibraryScreen;

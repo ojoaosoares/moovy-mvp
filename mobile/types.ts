@@ -4,4 +4,5 @@ export interface MovieDto {
   Poster: string;
   imdbRating: string;
   isFavorite: boolean;
+  audioPath?: string;
 }

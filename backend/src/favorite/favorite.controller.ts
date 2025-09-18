@@ -1,7 +1,12 @@
-import { Controller, Get, Post, Delete, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, UploadedFile,
+  UseInterceptors,
+  BadRequestException } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { Favorite } from './favorite.entity';
 import { Body } from '@nestjs/common/decorators/http/route-params.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
 
 @Controller('favorites')
 export class FavoriteController {
@@ -63,5 +68,32 @@ export class FavoriteController {
       }
       throw new Error('Error removing favorite');
     }
+  }
+
+  @Post('audio/:imdbID')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: join(process.cwd(), 'uploads'),
+        filename: (req, file, cb) => {
+          const fileExt = extname(file.originalname);
+          cb(null, `audio_${req.params.imdbID}${fileExt}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith('audio/')) {
+          return cb(new BadRequestException('Only audio files are allowed'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadAudio(
+    @Param('imdbID') imdbID: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log('Entrou no saveAudio', file);
+    if (!file) throw new BadRequestException('File not uploaded');
+    return this.favoriteService.saveAudio(imdbID, file.filename);
   }
 }
