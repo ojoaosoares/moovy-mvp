@@ -47,7 +47,9 @@ const AudioControls: React.FC<AudioControlsProps> = ({ movieId }) => {
     try {
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
-      const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+      );
       setRecording(recording);
       setIsRecording(true);
     } catch (err) {

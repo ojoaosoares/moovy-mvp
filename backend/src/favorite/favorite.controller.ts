@@ -1,6 +1,13 @@
-import { Controller, Get, Post, Delete, Param, UploadedFile,
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  UploadedFile,
   UseInterceptors,
-  BadRequestException } from '@nestjs/common';
+  BadRequestException,
+} from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { Favorite } from './favorite.entity';
 import { Body } from '@nestjs/common/decorators/http/route-params.decorator';
@@ -82,7 +89,10 @@ export class FavoriteController {
       }),
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith('audio/')) {
-          return cb(new BadRequestException('Only audio files are allowed'), false);
+          return cb(
+            new BadRequestException('Only audio files are allowed'),
+            false,
+          );
         }
         cb(null, true);
       },
