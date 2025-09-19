@@ -27,7 +27,10 @@ export class FavoriteRepository {
     return result.affected === 0;
   }
 
-  public async saveAudio(imdbID: string, audioPath: string): Promise<Favorite | null> {
+  public async saveAudio(
+    imdbID: string,
+    audioPath: string,
+  ): Promise<Favorite | null> {
     const favorite = await this.db.findOneBy({ imdbID });
     if (!favorite) return null;
 

@@ -58,13 +58,13 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: 'Arial',
   },
- emptyText: {
-  fontSize: 18,
-  color: '#666',
-  textAlign: 'center',
-  lineHeight: 24,
-  marginVertical: 20,
-},
+  emptyText: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginVertical: 20,
+  },
 });
 
 export default LibraryScreen;

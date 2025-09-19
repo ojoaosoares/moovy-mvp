@@ -23,17 +23,19 @@ export class FavoriteService {
   }
 
   public async getAllFavorites(): Promise<Partial<Favorite>[]> {
-  const favorites = await this.favoriteRepository.getAllFavorites();
-  favorites.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    const favorites = await this.favoriteRepository.getAllFavorites();
+    favorites.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-  return favorites.map((favorite) => ({
-    imdbID: favorite.imdbID,
-    Title: favorite.Title,
-    Poster: favorite.Poster,
-    imdbRating: favorite.imdbRating,
-    audioPath: favorite.audioPath ? `http://localhost:5000/${favorite.audioPath}` : undefined
-  }));
-}
+    return favorites.map((favorite) => ({
+      imdbID: favorite.imdbID,
+      Title: favorite.Title,
+      Poster: favorite.Poster,
+      imdbRating: favorite.imdbRating,
+      audioPath: favorite.audioPath
+        ? `http://localhost:4000/audio/${favorite.audioPath}`
+        : undefined,
+    }));
+  }
 
   public async deleteFavorite(imdbID: string): Promise<string> {
     const result = await this.favoriteRepository.deleteFavoriteByimdbID(imdbID);
