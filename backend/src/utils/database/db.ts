@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Favorite } from '../../favorite/favorite.entity';
+import { FavoriteEntity } from '../../favorite/entity/favorite.entity';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -14,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: false,
-  entities: [Favorite],
+  entities: [FavoriteEntity],
   migrations: [],
   subscribers: [],
 });

@@ -9,18 +9,18 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
-import { Favorite } from './favorite.entity';
 import { Body } from '@nestjs/common/decorators/http/route-params.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { FavoriteDTO, HasFavoriteDTO } from './dto/favorite.dto';
 
 @Controller('favorites')
 export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get('/')
-  async getFavorites(): Promise<{ favorites: Partial<Favorite>[] }> {
+  async getFavorites(): Promise<{ favorites: FavoriteDTO[] }> {
     try {
       const favorites = await this.favoriteService.getAllFavorites();
       return { favorites };
@@ -33,12 +33,10 @@ export class FavoriteController {
   }
 
   @Get('/:imdbID')
-  async isFavorite(
-    @Param('imdbID') imdbID: string,
-  ): Promise<{ isFavorite: boolean }> {
+  async isFavorite(@Param('imdbID') imdbID: string): Promise<HasFavoriteDTO> {
     try {
       const isFavorite = await this.favoriteService.hasFavorite(imdbID);
-      return { isFavorite };
+      return isFavorite;
     } catch (err: unknown) {
       if (err instanceof Error) {
         throw new Error(err.message);
@@ -48,12 +46,10 @@ export class FavoriteController {
   }
 
   @Post('/')
-  async addFavorite(
-    @Body() favoriteDto: Partial<Favorite>,
-  ): Promise<{ favorite: Favorite }> {
+  async addFavorite(@Body() favoriteDto: FavoriteDTO): Promise<FavoriteDTO> {
     try {
       const favorite = await this.favoriteService.createFavorite(favoriteDto);
-      return { favorite };
+      return favorite;
     } catch (err: unknown) {
       if (err instanceof Error) {
         throw new Error(err.message);
@@ -63,12 +59,10 @@ export class FavoriteController {
   }
 
   @Delete('/:imdbID')
-  async removeFavorite(
-    @Param('imdbID') imdbID: string,
-  ): Promise<{ message: string }> {
+  async removeFavorite(@Param('imdbID') imdbID: string): Promise<FavoriteDTO> {
     try {
-      const message = await this.favoriteService.deleteFavorite(imdbID);
-      return { message };
+      const favorite = await this.favoriteService.deleteFavorite(imdbID);
+      return favorite;
     } catch (err: unknown) {
       if (err instanceof Error) {
         throw new Error(err.message);
@@ -101,7 +95,7 @@ export class FavoriteController {
   async uploadAudio(
     @Param('imdbID') imdbID: string,
     @UploadedFile() file: Express.Multer.File,
-  ) {
+  ): Promise<FavoriteDTO> {
     console.log('Entrou no saveAudio', file);
     if (!file) throw new BadRequestException('File not uploaded');
     return this.favoriteService.saveAudio(imdbID, file.filename);
