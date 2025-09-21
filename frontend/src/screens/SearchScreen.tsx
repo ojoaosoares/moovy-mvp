@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { MovieDto } from '../types';
+import { MovieDto, HasFavoriteDTO } from '../types';
 import SearchBar from '../components/SearchBar';
 import ShowMovies from '../components/ShowMovies';
 
 const SearchScreen: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [movies, setMovies] = useState<MovieDto[]>([]);
+  const [movies, setMovies] = useState<HasFavoriteDTO[]>([]);
   const [onSearch, setOnSearch] = useState(true);
 
   const handleSearch = async () => {
@@ -18,20 +18,24 @@ const SearchScreen: React.FC = () => {
         `http://localhost:4000/movies/search?q=${query}`
       );
       const data = await response.json();
-      const moviesWithFavorite = await Promise.all(
-        (data.movies || []).map(async (movie: Partial<MovieDto>) => {
+      const searchedMovies: MovieDto[] = data.movies || [];
+      const hasFavMovies: HasFavoriteDTO[] = await Promise.all(
+        searchedMovies.map(async (movie: MovieDto) => {
           try {
             const res = await fetch(
               `http://localhost:4000/favorites/${movie.imdbID}`
             );
-            const json = await res.json();
-            return { ...movie, isFavorite: json.isFavorite };
+            const favData: HasFavoriteDTO = await res.json();
+            if (favData.hasFavorite) {
+              return { favorite: favData.favorite, hasFavorite: true };
+            }
+            return { favorite: movie, hasFavorite: false };
           } catch {
-            return { ...movie, isFavorite: false };
+            return { favorite: movie, hasFavorite: false };
           }
         })
       );
-      setMovies(moviesWithFavorite);
+      setMovies(hasFavMovies);
     } catch (err) {
       console.error(err);
       setMovies([]);

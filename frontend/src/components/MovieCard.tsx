@@ -1,14 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { MovieDto } from '../types';
+import { FavoriteDTO } from '../types';
 import FavoriteButton from './FavoriteButton';
 import AudioControl from './AudioControl';
 
 interface MovieCardProps {
-  movie: MovieDto;
+  movie: FavoriteDTO;
+  favorite?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
-  const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
+const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
+  const [isFavorite, setIsFavorite] = useState(favorite || false);
   const [showToast, setShowToast] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);

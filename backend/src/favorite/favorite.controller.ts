@@ -20,10 +20,10 @@ export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get('/')
-  async getFavorites(): Promise<{ favorites: FavoriteDTO[] }> {
+  async getFavorites(): Promise<FavoriteDTO[]> {
     try {
       const favorites = await this.favoriteService.getAllFavorites();
-      return { favorites };
+      return favorites;
     } catch (err: unknown) {
       if (err instanceof Error) {
         throw new Error(err.message);
@@ -96,7 +96,6 @@ export class FavoriteController {
     @Param('imdbID') imdbID: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<FavoriteDTO> {
-    console.log('Entrou no saveAudio', file);
     if (!file) throw new BadRequestException('File not uploaded');
     return this.favoriteService.saveAudio(imdbID, file.filename);
   }

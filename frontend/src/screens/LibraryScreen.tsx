@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MovieDto } from '../types';
+import { FavoriteDTO, HasFavoriteDTO } from '../types';
 import ShowMovies from '../components/ShowMovies';
 
 const LibraryScreen: React.FC = () => {
-  const [movies, setMovies] = useState<MovieDto[]>([]);
+  const [movies, setMovies] = useState<HasFavoriteDTO[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,15 +11,14 @@ const LibraryScreen: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetch('http://localhost:4000/favorites');
-        const data = await response.json();
-        console.log('Fetched favorites:', data.favorites);
-        const favoritesWithFlag = (data.favorites || []).map(
-          (movie: Partial<MovieDto>) => ({
-            ...movie,
-            isFavorite: true,
+        const data: FavoriteDTO[] = await response.json();
+        const isFavMovies: HasFavoriteDTO[] = data.map(
+          (movie: FavoriteDTO) => ({
+            favorite: movie,
+            hasFavorite: true,
           })
         );
-        setMovies(favoritesWithFlag);
+        setMovies(isFavMovies);
       } catch (error) {
         console.error('Error fetching favorites:', error);
       }
