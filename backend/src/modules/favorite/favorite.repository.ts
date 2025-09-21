@@ -1,4 +1,4 @@
-import { AppDataSource } from '../utils/database/db';
+import { AppDataSource } from '../../utils/database/db';
 import { FavoriteBO } from './bo/favorite.bo';
 import { FavoriteEntity } from './entity/favorite.entity';
 

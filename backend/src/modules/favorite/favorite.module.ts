@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { FavoriteController } from './favorite.controller';
-import { AppDataSource } from '../utils/database/db';
+import { AppDataSource } from '../../utils/database/db';
 
 @Module({
   controllers: [FavoriteController],

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { FavoriteEntity } from '../../favorite/entity/favorite.entity';
+import { FavoriteEntity } from '../../modules/favorite/entity/favorite.entity';
 import dotenv from 'dotenv';
 
 dotenv.config();

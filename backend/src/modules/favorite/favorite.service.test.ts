@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { FavoriteService } from './favorite.service';
 import { FavoriteEntity } from './entity/favorite.entity';
-import { AppDataSource } from '../utils/database/db';
+import { AppDataSource } from '../../utils/database/db';
 import { FavoriteDTO } from './dto/favorite.dto';
 
 describe('FavoriteService', () => {
