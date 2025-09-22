@@ -5,8 +5,8 @@ import { FavoriteEntity } from './entity/favorite.entity';
 export class FavoriteMapper {
   fromDTOtoBO(dto: FavoriteDTO): FavoriteBO {
     const bo = new FavoriteBO();
-    bo.title = dto.poster;
-    bo.Title = dto.title;
+    bo.title = dto.title;
+    bo.poster = dto.poster;
     bo.imdbRating = dto.imdbRating;
     bo.imdbID = dto.imdbID;
     bo.audioPath = dto.audioPath ? dto.audioPath : undefined;
@@ -15,8 +15,8 @@ export class FavoriteMapper {
 
   fromBOtoDTO(bo: FavoriteBO): FavoriteDTO {
     const dto = new FavoriteDTO();
-    dto.poster = bo.title;
-    dto.title = bo.Title;
+    dto.poster = bo.poster;
+    dto.title = bo.title;
     dto.imdbRating = bo.imdbRating;
     dto.imdbID = bo.imdbID;
     dto.audioPath = bo.audioPath ? bo.audioPath : undefined;
@@ -25,8 +25,8 @@ export class FavoriteMapper {
 
   fromBOtoEntity(bo: FavoriteBO): FavoriteEntity {
     const entity = new FavoriteEntity();
-    entity.poster = bo.title;
-    entity.title = bo.Title;
+    entity.poster = bo.poster;
+    entity.title = bo.title;
     entity.imdbRating = bo.imdbRating;
     entity.imdbID = bo.imdbID;
     entity.audioPath = bo.audioPath ? bo.audioPath : undefined;
@@ -35,8 +35,8 @@ export class FavoriteMapper {
 
   fromEntitytoBO(entity: FavoriteEntity): FavoriteBO {
     const bo = new FavoriteBO();
-    bo.title = entity.poster;
-    bo.Title = entity.title;
+    bo.poster = entity.poster;
+    bo.title = entity.title;
     bo.imdbRating = entity.imdbRating;
     bo.imdbID = entity.imdbID;
     bo.audioPath = entity.audioPath ? entity.audioPath : undefined;
