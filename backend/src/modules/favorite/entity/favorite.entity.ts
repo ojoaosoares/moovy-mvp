@@ -14,10 +14,10 @@ export class FavoriteEntity {
   imdbID: string;
 
   @Column('text')
-  Title: string;
+  title: string;
 
   @Column('text', { nullable: true })
-  Poster?: string;
+  poster?: string;
 
   @Column('text', { nullable: true })
   imdbRating?: string;

@@ -5,11 +5,11 @@ export class FavoriteDTO {
   imdbID: string;
 
   @IsString()
-  Title: string;
+  title: string;
 
   @IsOptional()
   @IsString()
-  Poster?: string;
+  poster?: string;
 
   @IsOptional()
   @IsString()

@@ -25,22 +25,22 @@ describe('FavoriteService', () => {
   describe('createFavorite', () => {
     it('should throw if required data is missing', async () => {
       await expect(
-        service.createFavorite({ Title: 'The Avengers' } as FavoriteEntity),
+        service.createFavorite({ title: 'The Avengers' } as FavoriteEntity),
       ).rejects.toThrow('All informations are required');
     });
 
     it('should create a favorite and persist it', async () => {
-      const favoriteData = new FavoriteEntity();
+      const favoriteData = new FavoriteDTO();
       favoriteData.imdbID = 'tt0848229';
-      favoriteData.Title = 'The Avengers 2: Age of Ultron';
+      favoriteData.title = 'The Avengers 2: Age of Ultron';
       favoriteData.imdbRating = '7';
-      favoriteData.Poster = 'https://test.poster';
+      favoriteData.poster = 'https://test.poster';
       favoriteData.audioPath = undefined;
 
       const favorite = await service.createFavorite(favoriteData);
 
       expect(favorite.imdbID).toBe(favoriteData.imdbID);
-      expect(favorite.Title).toBe(favoriteData.Title);
+      expect(favorite.title).toBe(favoriteData.title);
 
       const found = await AppDataSource.getRepository(FavoriteEntity).findOneBy(
         {
@@ -48,7 +48,7 @@ describe('FavoriteService', () => {
         },
       );
       expect(found).toBeDefined();
-      expect(found?.Title).toBe(favoriteData.Title);
+      expect(found?.title).toBe(favoriteData.title);
     });
   });
 

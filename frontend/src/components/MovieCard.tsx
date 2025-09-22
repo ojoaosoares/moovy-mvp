@@ -47,10 +47,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
           justifyContent: 'center',
         }}
       >
-        {movie.Poster ? (
+        {movie.poster ? (
           <img
-            src={movie.Poster}
-            alt={movie.Title || 'No Title'}
+            src={movie.poster}
+            alt={movie.title || 'No Title'}
             style={{
               width: '100%',
               height: '100%',
@@ -95,7 +95,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
             width: '80%',
           }}
         >
-          {movie.Title || 'No Title'}
+          {movie.title || 'No Title'}
         </h3>
         <div style={{ display: 'inline-flex', alignItems: 'flex-start' }}>
           <span

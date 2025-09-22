@@ -12,7 +12,7 @@ export class FavoriteService {
   }
 
   public async createFavorite(favoriteData: FavoriteDTO): Promise<FavoriteDTO> {
-    if (!favoriteData.imdbID || !favoriteData.Title) {
+    if (!favoriteData.imdbID || !favoriteData.title) {
       throw new Error('All informations are required');
     }
 
@@ -20,7 +20,7 @@ export class FavoriteService {
       this.favoriteMapper.fromDTOtoEntity(favoriteData),
     );
 
-    return this.favoriteMapper.fromEntitytoBO(entity);
+    return this.favoriteMapper.fromEntitytoDTO(entity);
   }
 
   public async hasFavorite(imdbID: string): Promise<HasFavoriteDTO> {
