@@ -5,8 +5,8 @@ export class MovieService {
     const response = await fetch(
       `http://localhost:4000/movies/search?q=${query}`
     );
-    const data = await response.json();
-    return data.movies || [];
+    const movies: MovieDto[] = await response.json();
+    return movies;
   }
 
   async checkFavorite(movie: MovieDto): Promise<HasFavoriteDTO> {
