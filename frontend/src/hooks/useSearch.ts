@@ -5,6 +5,7 @@ import { MovieService } from '../modules/search/search.service';
 const movieService = new MovieService();
 
 export function useMovieSearch() {
+  const [firstRun, setFirstRun] = useState(true);
   const [movies, setMovies] = useState<HasFavoriteDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export function useMovieSearch() {
     setLoading(true);
     setError(null);
     setMovies([]);
+    if (firstRun) setFirstRun(false);
 
     try {
       const results = await movieService.searchMoviesWithFavorites(query);
@@ -27,5 +29,5 @@ export function useMovieSearch() {
     }
   };
 
-  return { movies, loading, error, search };
+  return { movies, firstRun, loading, error, search };
 }

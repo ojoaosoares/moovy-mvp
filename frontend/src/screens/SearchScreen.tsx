@@ -5,7 +5,7 @@ import { useMovieSearch } from '../hooks/useSearch';
 
 const SearchScreen: React.FC = () => {
   const [query, setQuery] = useState('');
-  const { movies, loading, error, search } = useMovieSearch();
+  const { movies, firstRun, loading, error, search } = useMovieSearch();
 
   return (
     <div style={{ width: '80%', maxWidth: '800px', margin: '0 auto' }}>
@@ -25,10 +25,12 @@ const SearchScreen: React.FC = () => {
           onSearch={() => search(query)}
         />
 
-        {loading && <p>Loading...</p>}
-        {error && <p>{error}</p>}
-        {!loading && movies.length > 0 && <ShowMovies movies={movies} />}
-        {!loading && movies.length === 0 && !error && (
+        {!firstRun && loading && <p>Loading...</p>}
+        {!firstRun && error && <p>{error}</p>}
+        {!firstRun && !loading && movies.length > 0 && (
+          <ShowMovies movies={movies} />
+        )}
+        {!firstRun && !loading && movies.length === 0 && !error && (
           <h3>No movies found. Try a different search.</h3>
         )}
       </div>
