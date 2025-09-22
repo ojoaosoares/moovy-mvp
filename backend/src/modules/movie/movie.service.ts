@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { MovieDto, OmdbMovieResponse, OmdbSearchResponse } from './movie.dto';
+import { MovieDto } from './dto/movie.dto';
+import { BoSearch, BoMovie } from './bo/movie.bo';
+import { MovieMapper } from './movie.mapper';
 import { firstValueFrom } from 'rxjs';
 import * as dotenv from 'dotenv';
 
@@ -9,12 +11,15 @@ dotenv.config();
 @Injectable()
 export class MovieService {
   private readonly apiKey = process.env.IMDB_API_KEY;
+  private movieMapper: MovieMapper;
 
-  constructor(private readonly http: HttpService) {}
+  constructor(private readonly http: HttpService) {
+    this.movieMapper = new MovieMapper();
+  }
 
   async searchMovies(query: string): Promise<MovieDto[]> {
     const response = await firstValueFrom(
-      this.http.get<OmdbSearchResponse>(
+      this.http.get<BoSearch>(
         `https://www.omdbapi.com/?apikey=${this.apiKey}&s=${query}`,
       ),
     );
@@ -23,8 +28,10 @@ export class MovieService {
       return [];
     }
 
+    const boSearch = response.data;
+
     const movies = await Promise.all(
-      response.data.Search.filter((item) => item.Type === 'movie').map(
+      boSearch.Search.filter((item) => item.Type === 'movie').map(
         async (item) => {
           try {
             return await this.getMovie(item.imdbID);
@@ -51,7 +58,7 @@ export class MovieService {
 
   async getMovie(imdbId: string): Promise<MovieDto> {
     const response = await firstValueFrom(
-      this.http.get<OmdbMovieResponse>(
+      this.http.get<BoMovie>(
         `https://www.omdbapi.com/?apikey=${this.apiKey}&i=${imdbId}`,
       ),
     );
@@ -60,11 +67,8 @@ export class MovieService {
       throw new Error('Movie not found');
     }
 
-    return {
-      imdbID: response.data.imdbID,
-      Title: response.data.Title,
-      Poster: response.data.Poster,
-      imdbRating: response.data.imdbRating,
-    } as MovieDto;
+    const boMovie = response.data;
+
+    return this.movieMapper.fromBOtoDTO(boMovie);
   }
 }

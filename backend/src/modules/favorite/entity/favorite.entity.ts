@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Favorite {
+export class FavoriteEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

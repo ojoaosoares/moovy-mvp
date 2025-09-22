@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { MovieDto } from '../types';
+import { HasFavoriteDTO } from '../types';
 import MovieCard from './MovieCard';
 
 interface ShowMoviesProps {
-  movies: MovieDto[];
+  movies: HasFavoriteDTO[];
 }
 
 const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
-  const [displayedMovies, setDisplayedMovies] = useState<MovieDto[]>([]);
+  const [displayedMovies, setDisplayedMovies] = useState<HasFavoriteDTO[]>([]);
 
   useEffect(() => {
     let index = 0;
@@ -38,7 +38,15 @@ const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
       }}
     >
       {displayedMovies.map(
-        (movie) => movie && <MovieCard key={movie.imdbID} movie={movie} />
+        (movie) =>
+          movie &&
+          movie.favorite && (
+            <MovieCard
+              key={movie.favorite.imdbID}
+              movie={movie.favorite}
+              favorite={movie.hasFavorite}
+            />
+          )
       )}
     </div>
   );
