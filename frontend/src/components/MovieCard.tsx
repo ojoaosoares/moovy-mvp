@@ -1,50 +1,21 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { FavoriteDTO } from '../types';
 import FavoriteButton from './FavoriteButton';
 import AudioControl from './AudioControl';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useSetFavorite } from '../hooks/useToggleFavorite';
 
 interface MovieCardProps {
   movie: FavoriteDTO;
-  favorite?: boolean;
+  favorite: boolean;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
-  const [isFavorite, setIsFavorite] = useState(favorite || false);
-  const [showToast, setShowToast] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  const handleToggleFavorite = async () => {
-    const newValue = !isFavorite;
-    setIsFavorite(newValue);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-
-    try {
-      if (newValue) {
-        const res = await fetch(`http://localhost:4000/favorites`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(movie),
-        });
-        if (!res.ok) throw new Error('Failed to add favorite');
-      } else {
-        const res = await fetch(
-          `http://localhost:4000/favorites/${movie.imdbID}`,
-          { method: 'DELETE' }
-        );
-        if (!res.ok) throw new Error('Failed to remove favorite');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handlePlayAudio = () => {
-    if (!audioRef.current) return;
-    isPlaying ? audioRef.current.pause() : audioRef.current.play();
-    setIsPlaying(!isPlaying);
-  };
+  const { isFavorite, showToast, toggleFavorite } = useSetFavorite(
+    movie,
+    favorite
+  );
+  const { isPlaying, setIsPlaying, audioRef, togglePlay } = useAudioPlayer();
 
   return (
     <div
@@ -95,7 +66,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
           <AudioControl
             audioPath={movie.audioPath}
             isPlaying={isPlaying}
-            onTogglePlay={handlePlayAudio}
+            onTogglePlay={togglePlay}
             audioRef={audioRef}
             setIsPlaying={setIsPlaying}
           />
@@ -145,7 +116,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
 
       <FavoriteButton
         isFavorite={isFavorite}
-        onToggle={handleToggleFavorite}
+        onToggle={toggleFavorite}
         showToast={showToast}
       />
     </div>
