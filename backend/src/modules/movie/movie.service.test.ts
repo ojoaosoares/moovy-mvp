@@ -38,7 +38,7 @@ describe('MovieService', () => {
       const movies = await service.searchMovies('Inception');
       expect(movies).toBeInstanceOf(Array);
       expect(movies[0]).toHaveProperty('imdbID');
-      expect(movies[0]).toHaveProperty('Title');
+      expect(movies[0]).toHaveProperty('title');
     });
   });
 });

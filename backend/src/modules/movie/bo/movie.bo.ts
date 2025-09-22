@@ -14,6 +14,6 @@ export interface BoMovie {
   imdbID: string;
   Title: string;
   Poster?: string;
-  imdbRating: string;
+  imdbRating?: string;
   Response: string;
 }

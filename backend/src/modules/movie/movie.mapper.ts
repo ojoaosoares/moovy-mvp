@@ -5,8 +5,8 @@ export class MovieMapper {
   fromBOtoDTO(bo: BoMovie): MovieDto {
     const dto = new MovieDto();
     dto.imdbID = bo.imdbID;
-    dto.Title = bo.Title;
-    dto.Poster = bo.Poster;
+    dto.title = bo.Title;
+    dto.poster = bo.Poster;
     dto.imdbRating = bo.imdbRating;
     return dto;
   }

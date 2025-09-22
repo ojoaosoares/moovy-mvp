@@ -1,7 +1,7 @@
 export class FavoriteBO {
   imdbID: string;
-  Title: string;
-  Poster?: string;
+  title: string;
+  poster?: string;
   imdbRating?: string;
   audioPath?: string;
 }

@@ -1,12 +1,11 @@
 import { AppDataSource } from '../../utils/database/db';
-import { FavoriteBO } from './bo/favorite.bo';
 import { FavoriteEntity } from './entity/favorite.entity';
 
 export class FavoriteRepository {
   private db = AppDataSource.getRepository(FavoriteEntity);
 
   public async createFavorite(
-    favoriteData: FavoriteBO,
+    favoriteData: FavoriteEntity,
   ): Promise<FavoriteEntity> {
     const favorite = this.db.create(favoriteData);
     await this.db.save(favorite);
