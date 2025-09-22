@@ -13,5 +13,5 @@ export class MovieDto {
 
   @IsOptional()
   @IsString()
-  imdbRating: string;
+  imdbRating?: string;
 }
