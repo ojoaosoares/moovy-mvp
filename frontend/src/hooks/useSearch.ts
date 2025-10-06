@@ -1,33 +1,24 @@
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { HasFavoriteDTO } from '../types';
-import { MovieService } from '../modules/search/search.service';
+import { SearchService } from '../modules/search/search.service';
 
-const movieService = new MovieService();
+const searchService = new SearchService();
 
-export function useMovieSearch() {
-  const [firstRun, setFirstRun] = useState(true);
-  const [movies, setMovies] = useState<HasFavoriteDTO[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function useMovieSearch(query: string) {
+  const { data, isLoading, error, refetch } = useQuery<HasFavoriteDTO[]>({
+    queryKey: ['movies', query],
+    queryFn: () => searchService.searchMoviesWithFavorites(query),
+    enabled: !!query,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const search = async (query: string) => {
-    if (!query) return;
+  const firstRun = !query;
 
-    setLoading(true);
-    setError(null);
-    setMovies([]);
-    if (firstRun) setFirstRun(false);
-
-    try {
-      const results = await movieService.searchMoviesWithFavorites(query);
-      setMovies(results);
-    } catch (err: any) {
-      console.error(err);
-      setError('Failed to fetch movies');
-    } finally {
-      setLoading(false);
-    }
+  return {
+    movies: data ?? [],
+    firstRun,
+    loading: isLoading,
+    error: error?.message ?? null,
+    search: refetch,
   };
-
-  return { movies, firstRun, loading, error, search };
 }

@@ -5,7 +5,7 @@ import { useMovieSearch } from '../hooks/useSearch';
 
 const SearchScreen: React.FC = () => {
   const [query, setQuery] = useState('');
-  const { movies, firstRun, loading, error, search } = useMovieSearch();
+  const { movies, firstRun, loading, error, search } = useMovieSearch(query);
 
   return (
     <div style={{ width: '80%', maxWidth: '800px', margin: '0 auto' }}>
@@ -22,7 +22,7 @@ const SearchScreen: React.FC = () => {
         <SearchBar
           value={query}
           onChange={setQuery}
-          onSearch={() => search(query)}
+          onSearch={() => search()}
         />
 
         {!firstRun && loading && <p>Loading...</p>}
