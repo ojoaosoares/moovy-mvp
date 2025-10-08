@@ -8,7 +8,7 @@ const searchService = new SearchService();
 export function useMovieSearch() {
   const [query, setQuery] = useState('');
   const { data, isLoading, error } = useQuery<HasFavoriteDTO[]>({
-    queryKey: ['movies', query],
+    queryKey: ['movies', query.trim().toLowerCase()],
     queryFn: () => searchService.searchMoviesWithFavorites(query),
     enabled: !!query,
     staleTime: 1000 * 60 * 5,
