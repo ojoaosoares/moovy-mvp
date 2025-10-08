@@ -1,6 +1,6 @@
 import { MovieDto, HasFavoriteDTO } from '../../types';
 
-export class MovieService {
+export class SearchService {
   async searchMovies(query: string): Promise<MovieDto[]> {
     const response = await fetch(
       `http://localhost:4000/movies/search?q=${query}`
