@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'rea
 import { HasFavoriteDTO } from '../types';
 import FavoriteButton from './FavoriteButton';
 import AudioControls from './AudioControls';
+import { useSetFavorite } from '../hooks/useToggleFavorite';
 
 interface MovieCardProps {
   movie: HasFavoriteDTO;
@@ -11,28 +12,12 @@ interface MovieCardProps {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 
+//TODO add toast on mobile and on useSetFavorite
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
-  const [isFavorite, setIsFavorite] = useState(movie.hasFavorite || false);
-
-  const handleToggleFavorite = async () => {
-    const newValue = !isFavorite;
-    setIsFavorite(newValue);
-    try {
-      if (newValue) {
-        await fetch(`http://10.0.2.2:4000/favorites`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(movie),
-        });
-      } else {
-        await fetch(`http://10.0.2.2:4000/favorites/${movie.favorite.imdbID}`, {
-          method: 'DELETE',
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const { isFavorite, toggleFavorite } = useSetFavorite(
+    movie.favorite,
+    movie.hasFavorite
+  );
 
   return (
     <View style={styles.card}>
@@ -43,7 +28,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           <Text>No Poster</Text>
         )}
 
-        <FavoriteButton isFavorite={isFavorite} onToggle={handleToggleFavorite} />
+        <FavoriteButton isFavorite={isFavorite} onToggle={toggleFavorite} />
       </View>
 
       <View style={styles.info}>
