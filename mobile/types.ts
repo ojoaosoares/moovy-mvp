@@ -1,8 +1,12 @@
-export interface MovieDto {
+export interface FavoriteDTO {
   imdbID: string;
-  Title: string;
-  Poster: string;
-  imdbRating: string;
-  isFavorite: boolean;
+  title: string;
+  poster?: string;
+  imdbRating?: string;
   audioPath?: string;
+}
+
+export interface HasFavoriteDTO {
+  favorite: FavoriteDTO;
+  hasFavorite: boolean;
 }

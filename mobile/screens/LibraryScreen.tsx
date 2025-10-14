@@ -1,33 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { MovieDto } from '../types';
+import { useLibrary } from '../hooks/useLibrary';
 import ShowMovies from '../components/ShowMovies';
 
 const LibraryScreen: React.FC = () => {
-  const [movies, setMovies] = useState<MovieDto[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('http://10.0.2.2:4000/favorites');
-        const data = await response.json();
-        const favoritesWithFlag = (data.favorites || []).map((movie: Partial<MovieDto>) => ({
-          ...movie,
-          isFavorite: true,
-        }));
-        setMovies(favoritesWithFlag);
-      } catch (error) {
-        console.error('Error fetching favorites:', error);
-      }
-      setLoading(false);
-    };
-
-    fetchFavorites();
-
-    const interval = setInterval(fetchFavorites, 30000);
-  }, []);
+  const { movies, loading, error } = useLibrary();
 
   return (
     <View style={styles.container}>
@@ -36,8 +13,9 @@ const LibraryScreen: React.FC = () => {
       </View>
 
       {loading && <ActivityIndicator size="large" />}
-      {!loading && movies.length > 0 && <ShowMovies movies={movies} />}
-      {!loading && movies.length === 0 && (
+      {error && <Text style={styles.emptyText}>{error}</Text>}
+      {!loading && movies.length > 0 && !error && <ShowMovies movies={movies} />}
+      {!loading && movies.length === 0 && !error && (
         <Text style={styles.emptyText}>
           It looks like there are no movies in your library! Go to your web application and add
           some!

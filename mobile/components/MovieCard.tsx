@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { MovieDto } from '../types';
+import { HasFavoriteDTO } from '../types';
 import FavoriteButton from './FavoriteButton';
 import AudioControls from './AudioControls';
 
 interface MovieCardProps {
-  movie: MovieDto;
+  movie: HasFavoriteDTO;
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
-  const [isFavorite, setIsFavorite] = useState(movie.isFavorite || false);
+  const [isFavorite, setIsFavorite] = useState(movie.hasFavorite || false);
 
   const handleToggleFavorite = async () => {
     const newValue = !isFavorite;
@@ -25,7 +25,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           body: JSON.stringify(movie),
         });
       } else {
-        await fetch(`http://10.0.2.2:4000/favorites/${movie.imdbID}`, {
+        await fetch(`http://10.0.2.2:4000/favorites/${movie.favorite.imdbID}`, {
           method: 'DELETE',
         });
       }
@@ -37,8 +37,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   return (
     <View style={styles.card}>
       <View style={styles.imageWrapper}>
-        {movie.Poster ? (
-          <Image source={{ uri: movie.Poster }} style={styles.poster} />
+        {movie.favorite.poster ? (
+          <Image source={{ uri: movie.favorite.poster }} style={styles.poster} />
         ) : (
           <Text>No Poster</Text>
         )}
@@ -48,14 +48,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
       <View style={styles.info}>
         <Text numberOfLines={1} style={styles.title}>
-          {movie.Title || 'No Title'}
+          {movie.favorite.title || 'No Title'}
         </Text>
         <View style={styles.rating}>
           <Text style={styles.star}>★</Text>
-          <Text style={styles.ratingValue}>{movie.imdbRating || '-'}</Text>
+          <Text style={styles.ratingValue}>{movie.favorite.imdbRating || '-'}</Text>
         </View>
 
-        <AudioControls movieId={movie.imdbID} />
+        <AudioControls movieId={movie.favorite.imdbID} />
       </View>
     </View>
   );
