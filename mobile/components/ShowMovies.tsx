@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, Dimensions } from 'react-native';
-import { MovieDto } from '../types';
+import { HasFavoriteDTO } from '../types';
 import MovieCard from './MovieCard';
 
 interface ShowMoviesProps {
-  movies: MovieDto[];
+  movies: HasFavoriteDTO[];
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -15,7 +15,7 @@ const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN;
 const PADDING_HORIZONTAL = (SCREEN_WIDTH - CARD_WIDTH) / 2 - CARD_MARGIN / 2;
 
 const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
-  const [displayedMovies, setDisplayedMovies] = useState<MovieDto[]>([]);
+  const [displayedMovies, setDisplayedMovies] = useState<HasFavoriteDTO[]>([]);
 
   useEffect(() => {
     let index = 0;
@@ -49,7 +49,7 @@ const ShowMovies: React.FC<ShowMoviesProps> = ({ movies }) => {
       {displayedMovies.map(
         (movie) =>
           movie && (
-            <View key={movie.imdbID} style={styles.cardWrapper}>
+            <View key={movie.favorite.imdbID} style={styles.cardWrapper}>
               <MovieCard movie={movie} />
             </View>
           ),
