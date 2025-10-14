@@ -1,7 +1,7 @@
 import { FavoriteDTO } from '../../types';
 
 export class ToggleFavoriteService {
-  private baseUrl = 'http://localhost:4000/favorites';
+  private baseUrl = 'http://10.0.2.2:4000/favorites';
 
   async addFavorite(movie: FavoriteDTO): Promise<void> {
     const res = await fetch(this.baseUrl, {
