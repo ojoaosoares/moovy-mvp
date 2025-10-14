@@ -12,12 +12,9 @@ interface MovieCardProps {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 
-//TODO add toast on mobile and on useSetFavorite
+// TODO add toast on mobile and on useSetFavorite
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
-  const { isFavorite, toggleFavorite } = useSetFavorite(
-    movie.favorite,
-    movie.hasFavorite
-  );
+  const { isFavorite, toggleFavorite } = useSetFavorite(movie.favorite, movie.hasFavorite);
 
   return (
     <View style={styles.card}>
