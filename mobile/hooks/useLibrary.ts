@@ -12,8 +12,10 @@ export function useLibrary() {
 
   const mounted = useRef(true);
 
-  const fetchFavorites = useCallback(async () => {
-    setLoading(true);
+  const fetchFavorites = useCallback(async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -45,7 +47,7 @@ export function useLibrary() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchFavorites();
+    await fetchFavorites(false);
     setRefreshing(false);
   }, [fetchFavorites]);
 
