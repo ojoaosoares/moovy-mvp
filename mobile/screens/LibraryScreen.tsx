@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import { useLibrary } from '../hooks/useLibrary';
 import ShowMovies from '../components/ShowMovies';
 
 const LibraryScreen: React.FC = () => {
-  const { movies, loading, error } = useLibrary();
+  const { movies, loading, error, refreshing, onRefresh } = useLibrary();
 
   return (
+    <ScrollView contentContainerStyle={styles.container} 
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
     <View style={styles.container}>
       <View style={{ paddingTop: 20, paddingLeft: 20 }}>
         <Text style={styles.title}>My Library</Text>
@@ -22,6 +27,7 @@ const LibraryScreen: React.FC = () => {
         </Text>
       )}
     </View>
+    </ScrollView>
   );
 };
 
