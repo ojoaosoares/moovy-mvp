@@ -1,33 +1,60 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { HasFavoriteDTO } from '../types';
 import { LibraryService } from '../modules/library/library.service';
 
 const libraryService = new LibraryService();
-// TODO reiniciar o component quando puxar para baixo, 
-// e adicionar mounted pra evitar que o estado seja atualizado depois do componente desmonstado
+
 export function useLibrary() {
   const [movies, setMovies] = useState<HasFavoriteDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
+  const mounted = useRef(true);
+
+  const fetchFavorites = useCallback(async (showLoading = true) => {
+    if (showLoading) {
       setLoading(true);
-      setError(null);
+    }
+    setError(null);
 
-      try {
-        const favs = await libraryService.getFavorites();
+    try {
+      const favs = await libraryService.getFavorites();
+
+      if (mounted.current) {
         setMovies(favs);
-      } catch (err: any) {
-        console.error('Error fetching favorites:', err);
+      }
+    } catch (err: any) {
+      console.error('Error fetching favorites:', err);
+      if (mounted.current) {
         setError('Failed to fetch favorites');
-      } finally {
+      }
+    } finally {
+      if (mounted.current) {
         setLoading(false);
       }
-    };
-
-    fetchFavorites();
+    }
   }, []);
 
-  return { movies, loading, error };
+  useEffect(() => {
+    mounted.current = true;
+    fetchFavorites();
+
+    return () => {
+      mounted.current = false;
+    };
+  }, [fetchFavorites]);
+
+  const onRefresh = useCallback(async () => {
+    if (!mounted.current) return;
+
+    setRefreshing(true);
+    await fetchFavorites();
+
+    if (mounted.current) {
+      setRefreshing(false);
+    }
+  }, [fetchFavorites]);
+
+  return { movies, loading, error, refreshing, onRefresh };
 }
