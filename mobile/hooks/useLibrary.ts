@@ -25,9 +25,9 @@ export function useLibrary() {
         setMovies(favs);
       }
     } catch (err: any) {
-      console.error("Error fetching favorites:", err);
+      console.error('Error fetching favorites:', err);
       if (mounted.current) {
-        setError("Failed to fetch favorites");
+        setError('Failed to fetch favorites');
       }
     } finally {
       if (mounted.current) {
@@ -46,9 +46,14 @@ export function useLibrary() {
   }, [fetchFavorites]);
 
   const onRefresh = useCallback(async () => {
+    if (!mounted.current) return;
+
     setRefreshing(true);
-    await fetchFavorites(false);
-    setRefreshing(false);
+    await fetchFavorites();
+
+    if (mounted.current) {
+      setRefreshing(false);
+    }
   }, [fetchFavorites]);
 
   return { movies, loading, error, refreshing, onRefresh };
