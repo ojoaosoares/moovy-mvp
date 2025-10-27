@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import SearchBar from '../components/SearchBar';
 import ShowMovies from '../components/ShowMovies';
 import { useMovieSearch } from '../hooks/useSearch';
 
 const SearchScreen: React.FC = () => {
-  const [input, setInput] = useState('');
-  const { movies, firstRun, loading, error, setQuery } = useMovieSearch();
+  const { movies, firstRun, loading, error, setQuery, input, setInput, suggestion } = useMovieSearch();
 
   return (
     <div style={{ width: '80%', maxWidth: '800px', margin: '0 auto' }}>
@@ -25,6 +24,7 @@ const SearchScreen: React.FC = () => {
           onSearch={() => {
             setQuery(input);
           }}
+          suggestion={suggestion}
         />
 
         {!firstRun && loading && <p>Loading...</p>}

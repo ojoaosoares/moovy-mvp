@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { Search } from 'lucide-react';
+import { Autocomplete, TextField } from '@mui/material';
 
 interface SearchBarProps {
   value: string;
@@ -7,6 +8,7 @@ interface SearchBarProps {
   onSearch: () => void;
   placeholder?: string;
   maxWidth?: string | number;
+  suggestion?: string[];
 }
 
 const SearchBar: FC<SearchBarProps> = ({
@@ -15,6 +17,7 @@ const SearchBar: FC<SearchBarProps> = ({
   onSearch,
   placeholder = 'Search...',
   maxWidth = '400px',
+  suggestion = [],
 }) => {
   return (
     <div
@@ -32,38 +35,43 @@ const SearchBar: FC<SearchBarProps> = ({
           maxWidth,
         }}
       >
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+        <Autocomplete
+          freeSolo
+          options={suggestion}
+          inputValue={value}
+          onInputChange={(_, val) => onChange(val)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') onSearch();
           }}
-          placeholder={placeholder}
-          style={{
-            width: '100%',
-            borderRadius: '15px',
-            border: '1px solid #dedede',
-            padding: '0.5rem 2.5rem 0.5rem 0.8rem',
-            boxSizing: 'border-box',
-          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={placeholder}
+              variant="outlined"
+              size="small"
+              InputProps={{
+                ...params.InputProps,
+                style: {
+                  borderRadius: '15px',
+                  padding: '0.5rem 2.5rem 0.5rem 0.8rem',
+                },
+                endAdornment: (
+                  <span
+                    onClick={onSearch}
+                    style={{
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Search size={20} color="#000" />
+                  </span>
+                ),
+              }}
+            />
+          )}
         />
-        <span
-          onClick={onSearch}
-          style={{
-            position: 'absolute',
-            right: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            cursor: 'pointer',
-            color: '#888',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Search size={20} color="#000" />
-        </span>
       </div>
     </div>
   );
