@@ -1,20 +1,25 @@
 import React from 'react';
+import { FavoriteDTO } from '../types';
+import { useSetFavorite } from '../hooks/useToggleFavorite';
 
 interface FavoriteButtonProps {
-  isFavorite: boolean;
-  onToggle: () => void;
-  showToast: boolean;
+  movie: FavoriteDTO;
+  favorite: boolean;
 }
 
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({
-  isFavorite,
-  onToggle,
-  showToast,
+  favorite,
+  movie,
 }) => {
+
+  const { isFavorite, showToast, toggleFavorite } = useSetFavorite(
+      movie,
+      favorite
+    );
   return (
     <div style={styles.wrapper}>
       <button
-        onClick={onToggle}
+        onClick={toggleFavorite}
         style={{
           ...styles.button,
           backgroundColor: isFavorite ? '#FE6D8E' : '#0ACF83',

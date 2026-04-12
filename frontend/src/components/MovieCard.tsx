@@ -3,7 +3,6 @@ import { FavoriteDTO } from '../types';
 import FavoriteButton from './FavoriteButton';
 import AudioControl from './AudioControl';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
-import { useSetFavorite } from '../hooks/useToggleFavorite';
 
 interface MovieCardProps {
   movie: FavoriteDTO;
@@ -11,10 +10,6 @@ interface MovieCardProps {
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
-  const { isFavorite, showToast, toggleFavorite } = useSetFavorite(
-    movie,
-    favorite
-  );
   const { isPlaying, setIsPlaying, audioRef, togglePlay } = useAudioPlayer();
 
   return (
@@ -115,9 +110,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, favorite }) => {
       </div>
 
       <FavoriteButton
-        isFavorite={isFavorite}
-        onToggle={toggleFavorite}
-        showToast={showToast}
+        movie={movie}
+        favorite={favorite}
       />
     </div>
   );
