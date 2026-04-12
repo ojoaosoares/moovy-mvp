@@ -17,7 +17,7 @@ const Header: React.FC = () => {
       }}
     >
       <NavLink to="/" style={{ textDecoration: 'none' }}>
-        <h1 style={{ margin: 0, color: '#F2911B' }}>Moovey</h1>
+        <h1 style={{ margin: 0, color: '#F2911B' }}>Moovy</h1>
       </NavLink>
 
       <nav
