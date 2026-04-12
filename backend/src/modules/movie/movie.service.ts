@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { MovieDto } from './dto/movie.dto';
 import { BoSearch, BoMovie } from './bo/movie.bo';
 import { MovieMapper } from './movie.mapper';
 import { firstValueFrom } from 'rxjs';
 import * as dotenv from 'dotenv';
+import * as CacheManager from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 dotenv.config();
 
@@ -13,11 +15,20 @@ export class MovieService {
   private readonly apiKey = process.env.IMDB_API_KEY;
   private movieMapper: MovieMapper;
 
-  constructor(private readonly http: HttpService) {
+  constructor(
+    private readonly http: HttpService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: CacheManager.Cache,
+  ) {
     this.movieMapper = new MovieMapper();
   }
 
   async searchMovies(query: string): Promise<MovieDto[]> {
+
+    const cachedQuery = await this.cacheManager.get<MovieDto[]>(`query:${query}`);
+    if (cachedQuery)
+      return cachedQuery;
+
+
     const response = await firstValueFrom(
       this.http.get<BoSearch>(
         `https://www.omdbapi.com/?apikey=${this.apiKey}&s=${query}`,
@@ -53,10 +64,16 @@ export class MovieService {
       const ratingB = Number(b.imdbRating) || 0;
       return ratingB - ratingA;
     });
+
+    await this.cacheManager.set(`query:${query}`, uniqueMovies);
     return uniqueMovies;
   }
 
   async getMovie(imdbId: string): Promise<MovieDto> {
+
+    const cachedMovie = await this.cacheManager.get<MovieDto>(`movie:${imdbId}`);
+    if (cachedMovie) return cachedMovie;
+
     const response = await firstValueFrom(
       this.http.get<BoMovie>(
         `https://www.omdbapi.com/?apikey=${this.apiKey}&i=${imdbId}`,
@@ -69,6 +86,8 @@ export class MovieService {
 
     const boMovie = response.data;
 
-    return this.movieMapper.fromBOtoDTO(boMovie);
+    const movieDTO = this.movieMapper.fromBOtoDTO(boMovie);
+    await this.cacheManager.set(`movie:${imdbId}`, movieDTO);
+    return movieDTO;
   }
 }

@@ -26,7 +26,15 @@ describe('MovieService', () => {
       ),
     };
 
-    service = new MovieService(httpService as HttpService);
+    const mockCacheManager = {
+      get: jest.fn(),
+      set: jest.fn(),
+    };
+
+    service = new MovieService(
+      httpService as HttpService,
+      mockCacheManager as any
+    );
   });
 
   it('MovieService should be defined', () => {
